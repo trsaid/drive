@@ -1,10 +1,15 @@
-package drive;
+package drive.main;
 
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import drive.dao.loginDAO;
+import drive.dao.membreDAO;
+
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -12,26 +17,11 @@ import java.awt.event.ActionEvent;
 
 public class Login {
 
-	private JFrame frame;
+	public JFrame frame;
 	private JTextField username;
 	private JPasswordField password;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Login window = new Login();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	private membreDAO membre;
+	private loginDAO login;
 	/**
 	 * Create the application.
 	 */
@@ -70,6 +60,19 @@ public class Login {
 			public void actionPerformed(ActionEvent arg0) {
 				String uname = username.getText();
 				String pass = password.getText();
+//				boolean logged = false;
+//				try {
+					boolean logged = login.login(uname, pass);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				JOptionPane.showMessageDialog(frame, logged);
+				if(Boolean.TRUE.equals(logged)) {
+					JOptionPane.showMessageDialog(frame, "Nom de compte valide");
+				}else {
+					JOptionPane.showMessageDialog(frame, "Nom de compte invalide");
+				}
 			}
 		});
 		btnSeConnecter.setBounds(193, 173, 95, 23);

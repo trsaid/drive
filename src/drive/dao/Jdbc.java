@@ -1,4 +1,4 @@
-package drive;
+package drive.dao;
 
 import java.sql.*;
 
