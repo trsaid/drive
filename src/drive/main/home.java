@@ -8,9 +8,13 @@ import javax.swing.JLabel;
 import drive.dao.loginDAO;
 import drive.pojo.Membre;
 
+import drive.main.main;;
+
 public class home {
 
 	private JFrame frame;
+	
+	private loginDAO logindao;
 
 	/**
 	 * Launch the application.
