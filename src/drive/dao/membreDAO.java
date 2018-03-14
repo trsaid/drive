@@ -35,7 +35,7 @@ public class membreDAO extends genericDAO {
 	}
 	
 	
-	//rend la classe sattique et retourne un seul resultat
+	//rend la class sattique et retourne un seul resultat
 	public static membreDAO getInstance() {
 		return INSTANCE;
 	}

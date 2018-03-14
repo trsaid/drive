@@ -6,7 +6,6 @@ import java.util.List;
 
 import drive.dao.membreDAO;
 import drive.pojo.Membre;
-import drive.main.Login;
 
 public class main {
 
@@ -15,12 +14,8 @@ public class main {
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					Login window = new Login();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				loginFrame login = new loginFrame();
+				login.setVisible(true);
 			}
 		});
 
