@@ -198,6 +198,10 @@ public class main extends JFrame {
 		label_img.setBounds(214, 18, 172, 111);
 		panel.add(label_img);
 		
+		/**
+		 * Déplacement fenetre
+		 */
+		
 		JPanel MotionPanel = new JPanel();
 		MotionPanel.setOpaque(false);
 		MotionPanel.setFocusable(false);
@@ -222,11 +226,6 @@ public class main extends JFrame {
 				yMouse = e.getY();
 			}
 		});
-		
-		
-		/**
-		 * Déplacement de la fenetre.
-		 */
 		
 		
 		/**
@@ -258,9 +257,8 @@ public class main extends JFrame {
 							pref.put("save", "oui");
 							saveUser(uname, pass);
 						}
-						List<Membre> user = logindao.getInstance().userInfo(logged);
-						home h = new home();
-						h.getFrame().setVisible(true);
+						home h = new home(logged);
+						h.setVisible(true);
 						setVisible(false);
 						
 					}
