@@ -16,10 +16,10 @@ import drive.main.home;
 
 public class FTPUpload {
 	public static void Upload(String file) {
-		String server = "ip";
+		String server = "192.168.0.11";
 		int port = 21;
-		String user = "user";
-		String pass = "pass";
+		String user = "said";
+		String pass = "123456";
 		
 		File MyFile = new File(file);
 		
@@ -44,25 +44,27 @@ public class FTPUpload {
 			ftpClient.setCopyStreamListener(streamListener);
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			ftpClient.enterLocalPassiveMode();
+			
+			
+			// Vérification de l'éxistance du dossier.
+			// Renvoi 550 si le dossier n'existe pas, sinon 250.
+			int Exist_Error_code = ftpClient.cwd("upload");
+			System.out.println("code : " + Exist_Error_code);
 
 			String FileName = MyFile.getName();
-			InputStream inputStream = new FileInputStream(FileName);
-			ftpClient.storeFile(FileName, inputStream);
+			InputStream inputStream = new FileInputStream(MyFile);
 			
-
-			System.out.println("Transfert des fichiers en cours...");
-			OutputStream outputStream = ftpClient.storeFileStream("upload/" + FileName);
-			byte[] bytesIn = new byte[4096];
-			int read = 0;
-
-			while ((read = inputStream.read(bytesIn)) != -1) {
-				outputStream.write(bytesIn, 0, read);
+			// Si le dossier n'éxiste pas.
+			if(Exist_Error_code == 550) {
+				System.out.println("Dossier personnel inéxistant.");
+				System.out.println("Création en cours...");
+				ftpClient.makeDirectory("upload");
 			}
-			
-			inputStream.close();
-			outputStream.close();
+			System.out.println("Transfert des fichiers en cours...");
+			boolean completed = ftpClient.storeFile(FileName, inputStream);
 
-			boolean completed = ftpClient.completePendingCommand();
+			inputStream.close();
+
 			if (completed) {
 				System.out.println("Le fichier a été transféré.");
 			}
