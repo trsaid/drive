@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.swing.JProgressBar;
 import javax.swing.plaf.ProgressBarUI;
 
 import org.apache.commons.net.ftp.FTP;
@@ -14,7 +15,31 @@ import org.apache.commons.net.io.CopyStreamAdapter;
 
 import drive.main.home;
 
-public class FTPUpload {
+public class FTPUpload extends Thread {
+
+private static int DELAY = 200;
+
+	static JProgressBar progressBar;
+	static int percent;
+
+	public FTPUpload(JProgressBar bar) {
+	  progressBar = bar;
+	}
+
+	public void run() {
+//	  int minimum = progressBar.getMinimum();
+//	  int maximum = progressBar.getMaximum();
+//	  for (int i = minimum; i < maximum; i++) {
+//	    try {
+//	      int value = percent;
+//	      progressBar.setValue(value);
+//	
+//	      Thread.sleep(DELAY);
+//	    } catch (InterruptedException ignoredException) {
+//	    }
+//	  }
+	}
+
 	public static void Upload(String file) {
 		String server = "192.168.0.11";
 		int port = 21;
@@ -28,7 +53,8 @@ public class FTPUpload {
 		    @Override
 		    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
 
-		       int percent = (int)(totalBytesTransferred*100/MyFile.length());
+		       percent = (int)(totalBytesTransferred*100/MyFile.length());
+		       progressBar.setValue(percent);
 		       System.out.println(percent +"%");
 
 		    }
@@ -49,7 +75,7 @@ public class FTPUpload {
 			// Vérification de l'éxistance du dossier.
 			// Renvoi 550 si le dossier n'existe pas, sinon 250.
 			int Exist_Error_code = ftpClient.cwd("upload");
-			System.out.println("code : " + Exist_Error_code);
+//			System.out.println("code : " + Exist_Error_code);
 
 			String FileName = MyFile.getName();
 			InputStream inputStream = new FileInputStream(MyFile);

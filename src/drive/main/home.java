@@ -1,15 +1,13 @@
 package drive.main;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -30,21 +28,41 @@ import java.util.TooManyListenersException;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
 
 import drive.dao.loginDAO;
 import drive.pojo.Membre;
 import drive.pojo.FTPUpload;
 import javax.swing.JProgressBar;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.ImageIcon;
 
 public class home extends JFrame {
 
 	private JPanel contentPane;
+	private JPanel panel_upload;
+	
+	private JLabel lbl_upload_txt;
+	private JLabel lbl_progres_total;
+	private JLabel lbl_progres_fichier;
+	
+	private JProgressBar progressBar_file;
+	private JProgressBar progressBar_total;
+	
+	private String fileName;
+	private int upload_file_size;
+	private int fileNumber;
+	
+	
 	private int xMouse, yMouse;
 
 	/**
@@ -100,7 +118,7 @@ public class home extends JFrame {
 		panel.add(MotionPanel);
 
 		JLabel lblCompte = new JLabel("Compte : ");
-		lblCompte.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblCompte.setFont(new Font("Century Gothic", Font.BOLD, 22));
 		lblCompte.setForeground(Color.WHITE);
 		lblCompte.setBounds(54, 67, 332, 52);
 		panel.add(lblCompte);
@@ -125,199 +143,122 @@ public class home extends JFrame {
 		List<Membre> user = loginDAO.getInstance().userInfo(user_id);
 		lblCompte.setText("Compte : " + user.get(0).getUsername());
 
-		JPanel panel_upload = new JPanel();
+		panel_upload = new JPanel();
+		panel_upload.setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), null));
 		panel_upload.setBounds(10, 150, 580, 289);
 		panel_upload.setBackground(new Color(32, 33, 35));
 		panel.add(panel_upload);
-
-		panel_upload.add(new DropPane());
+		panel_upload.setLayout(null);
 		
+		lbl_upload_txt = new JLabel("Glissez vos fichiez ici");
+		lbl_upload_txt.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_upload_txt.setFont(new Font("Century Gothic", Font.BOLD, 22));
+		lbl_upload_txt.setForeground(Color.WHITE);
+		lbl_upload_txt.setBounds(10, 152, 560, 50);
+		panel_upload.add(lbl_upload_txt);
+		
+		JLabel label = new JLabel("");
+		label.setIcon(new ImageIcon("C:\\Users\\trsai\\Desktop\\java\\drive\\drive\\upload.png"));
+		label.setBounds(208, 11, 164, 130);
+		panel_upload.add(label);
+		
+		progressBar_total = new JProgressBar();
+		progressBar_total.setForeground(new Color(0, 128, 128));
+		progressBar_total.setBounds(10, 270, 560, 14);
+		panel_upload.add(progressBar_total);
+		
+		progressBar_file = new JProgressBar();
+		progressBar_file.setForeground(new Color(0, 128, 128));
+		progressBar_file.setBounds(10, 225, 560, 14);
+		panel_upload.add(progressBar_file);
+		
+		lbl_progres_fichier = new JLabel("Fichier :");
+		lbl_progres_fichier.setForeground(new Color(255, 255, 255));
+		lbl_progres_fichier.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lbl_progres_fichier.setBounds(10, 200, 560, 14);
+		panel_upload.add(lbl_progres_fichier);
+		
+		lbl_progres_total = new JLabel("Progression totale :");
+		lbl_progres_total.setForeground(Color.WHITE);
+		lbl_progres_total.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lbl_progres_total.setBounds(10, 245, 560, 15);
+		panel_upload.add(lbl_progres_total);
+
 		JProgressBar progressBar = new JProgressBar();
-		progressBar.setBounds(18, 113, 518, 23);
+		progressBar.setBounds(10, 113, 580, 23);
 		panel.add(progressBar);
+
+		JButton btnNewButton = new JButton("New button");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnNewButton.setBounds(501, 87, 89, 23);
+		panel.add(btnNewButton);
+
+		// ActionListener actionListener = new ActionListener() {
+		// public void actionPerformed(ActionEvent e) {
+		Thread stepper = new FTPUpload(progressBar);
+		stepper.start();
+		// }
+		// };
+		// btnNewButton.addActionListener(actionListener);
+
+		modifyLabel();
 
 	}
 
-	@SuppressWarnings("serial")
-	public class DropPane extends JPanel {
-		private DropTarget dropTarget;
-		private DropTargetHandler dropTargetHandler;
-		private Point dragPoint;
+	public void modifyLabel() {
+		@SuppressWarnings("serial")
+		TransferHandler th = new TransferHandler() {
 
-		private boolean dragOver = false;
-		private BufferedImage target;
-
-		private JLabel message;
-		
-
-		public DropPane() {
-			try {
-				target = ImageIO.read(new File("upload.png"));
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-
-			setLayout(null);
-			
-			
-			message = new JLabel("Glissez vos fichiez ici");
-			message.setFont(new Font("Tahoma", Font.BOLD, 16));
-			message.setForeground(Color.WHITE);
-			message.setBounds(0, 50, 580, 350);
-			message.setHorizontalAlignment(SwingConstants.CENTER);
-			add(message);
-
-		}
-
-
-		protected DropTarget getMyDropTarget() {
-			if (dropTarget == null) {
-				dropTarget = new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, null);
-			}
-			return dropTarget;
-		}
-
-		protected DropTargetHandler getDropTargetHandler() {
-			if (dropTargetHandler == null) {
-				dropTargetHandler = new DropTargetHandler();
-			}
-			return dropTargetHandler;
-		}
-
-		@Override
-		public void addNotify() {
-			super.addNotify();
-			try {
-				getMyDropTarget().addDropTargetListener(getDropTargetHandler());
-			} catch (TooManyListenersException ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		@Override
-		public void removeNotify() {
-			super.removeNotify();
-			getMyDropTarget().removeDropTargetListener(getDropTargetHandler());
-		}
-
-		@Override
-		protected void paintComponent(Graphics g) {
-			setBounds(0, 0, 580, 288);
-			super.paintComponent(g);
-			Graphics2D g2d = (Graphics2D) g.create();
-			
-			/**
-			 * Image upload
-			 */
-			int x, y;
-			if (dragOver) {
-//				setBackground(new Color(255, 255, 255));
-				if (dragPoint != null && target != null) {
-					x = dragPoint.x - 12;
-					y = dragPoint.y - 12;
-					g2d.drawImage(target, x, y, this);
-				}
-				g2d.dispose();
-				
-			}
-			x = getWidth()/2 - target.getWidth()/2;
-			y = getHeight()/2 - target.getHeight()/2;
-			g2d.drawImage(target, x, y, this);
-			setBackground(new Color(32, 33, 35));
-			
-			
-			setBorder(BorderFactory.createDashedBorder(new Color(187, 187, 187), 7, 7, 3, true));
-			
-		}
-
-		protected void importFiles(final List files) {
-			Runnable run = new Runnable() {
-				@Override
-				public void run() {
-					message.setText("Vous avez ajouté " + files.size() + " fichier(s)");
-					String fileName = files.get(0).toString();
-					FTPUpload.Upload(fileName);
-				}
+			@Override
+			public boolean canImport(JComponent comp, DataFlavor[] tf) {
+				return true;
 			};
-			SwingUtilities.invokeLater(run);
-		}
 
-		protected class DropTargetHandler implements DropTargetListener {
-
-			protected void processDrag(DropTargetDragEvent dtde) {
-				if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-					dtde.acceptDrag(DnDConstants.ACTION_COPY);
-				} else {
-					dtde.rejectDrag();
-				}
-			}
-
+			@SuppressWarnings("unchecked")
 			@Override
-			public void dragEnter(DropTargetDragEvent dtde) {
-				processDrag(dtde);
-				SwingUtilities.invokeLater(new DragUpdate(true, dtde.getLocation()));
-				repaint();
-			}
-
-			@Override
-			public void dragOver(DropTargetDragEvent dtde) {
-				processDrag(dtde);
-				SwingUtilities.invokeLater(new DragUpdate(true, dtde.getLocation()));
-				repaint();
-			}
-
-			@Override
-			public void dropActionChanged(DropTargetDragEvent dtde) {
-			}
-
-			@Override
-			public void dragExit(DropTargetEvent dte) {
-				SwingUtilities.invokeLater(new DragUpdate(false, null));
-				repaint();
-			}
-
-			@Override
-			public void drop(DropTargetDropEvent dtde) {
-
-				SwingUtilities.invokeLater(new DragUpdate(false, null));
-
-				Transferable transferable = dtde.getTransferable();
-				if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-					dtde.acceptDrop(dtde.getDropAction());
-					try {
-
-						List transferData = (List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-						if (transferData != null && transferData.size() > 0) {
-							importFiles(transferData);
-							dtde.dropComplete(true);
-						}
-
-					} catch (Exception ex) {
-						ex.printStackTrace();
+			public boolean importData(JComponent comp, Transferable t) {
+				List<File> files;
+				try {
+					files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+					upload_file_size = files.size();
+					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
+					
+					for (File file : files) {
+						SwingUtilities.invokeLater(new Progress_Update());
+						fileNumber = files.indexOf(file) + 1;
+						fileName = file.getName();
+						String filePath = file.toString();
+						System.out.println("Envoi du fichier " + fileNumber + "/" + upload_file_size);
+						
+						FTPUpload.Upload(filePath);
 					}
-				} else {
-					dtde.rejectDrop();
+				} catch (UnsupportedFlavorException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+				return true;
+			}
+		};
+		panel_upload.setTransferHandler(th);
+	}
+	public class Progress_Update extends Thread {
+		private static final int DELAY = 200;
+		@Override
+		public void run() {
+			try {
+				progressBar_total.setMaximum(upload_file_size);
+				progressBar_total.setValue(fileNumber);
+				lbl_progres_fichier.setText("Fichier : " + fileName);
+				lbl_progres_total.setText("Progression totale : " + fileNumber + "/" + upload_file_size);
+				Thread.sleep(DELAY);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-
-		public class DragUpdate implements Runnable {
-
-			private boolean dragOver;
-			private Point dragPoint;
-
-			public DragUpdate(boolean dragOver, Point dragPoint) {
-				this.dragOver = dragOver;
-				this.dragPoint = dragPoint;
-			}
-
-			@Override
-			public void run() {
-				DropPane.this.dragOver = dragOver;
-				DropPane.this.dragPoint = dragPoint;
-				DropPane.this.repaint();
-			}
-		}
-
 	}
 }
