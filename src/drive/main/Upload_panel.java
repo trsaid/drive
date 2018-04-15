@@ -87,6 +87,8 @@ public class Upload_panel extends JPanel {
 		lbl_progres_fichier_p.setForeground(Color.WHITE);
 		lbl_progres_fichier_p.setBounds(540, 201, 40, 14);
 		add(lbl_progres_fichier_p);
+		
+		modifyLabel();
 
 	}
 	

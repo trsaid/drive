@@ -4,37 +4,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
 import javax.swing.JProgressBar;
-import javax.swing.plaf.ProgressBarUI;
-
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.io.CopyStreamAdapter;
 
-import drive.main.home;
+import drive.dao.uploadDAO;
 
-public class FTPUpload extends Thread {
+public class FTPUpload {
 
-private static int DELAY = 200;
+//private static int DELAY = 200;
 
 	static JProgressBar progressBar;
 	static int percent;
 
-	public FTPUpload(JProgressBar bar) {
-	  progressBar = bar;
-	}
+//	public FTPUpload(JProgressBar bar) {
+//	  progressBar = bar;
+//	}
 
-	public void run() {
-	  for (int i = 0; i < 100; i++) {
-	    try {
-	    	home.lbl_progres_fichier_p.setText(i +"%");
-	      Thread.sleep(DELAY);
-	    } catch (InterruptedException ignoredException) {
-	    }
-	  }
-	}
+//	public void run() {
+//	  for (int i = 0; i < 100; i++) {
+//	    home.lbl_progres_fichier_p.setText(i +"%");
+//	      Thread.sleep(DELAY);
+//	  }
+//	}
 
 	public static void Upload(String file) {
 		String server = "192.168.0.11";
@@ -52,7 +45,7 @@ private static int DELAY = 200;
 		       percent = (int)(totalBytesTransferred*100/MyFile.length());
 		       progressBar.setValue(percent);
 		       System.out.println(percent +"%");
-		       home.lbl_progres_fichier_p.setText(percent +"%");
+//		       home.lbl_progres_fichier_p.setText(percent +"%");
 
 		    }
 
@@ -64,13 +57,14 @@ private static int DELAY = 200;
 			ftpClient.connect(server, port);
 			ftpClient.login(user, pass);
 
-			ftpClient.setCopyStreamListener(streamListener);
+//			ftpClient.setCopyStreamListener(streamListener);
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			ftpClient.enterLocalPassiveMode();
 			
-			
-			// Vérification de l'éxistance du dossier.
-			// Renvoi 550 si le dossier n'existe pas, sinon 250.
+			/*
+			 Vérification de l'éxistance du dossier.
+			 Renvoi 550 si le dossier n'existe pas, sinon 250.
+			*/
 			int Exist_Error_code = ftpClient.cwd("upload");
 //			System.out.println("code : " + Exist_Error_code);
 
@@ -85,11 +79,13 @@ private static int DELAY = 200;
 			}
 			System.out.println("Transfert des fichiers en cours...");
 			boolean completed = ftpClient.storeFile(FileName, inputStream);
+			System.out.println("1" + completed);
 
 			inputStream.close();
 
 			if (completed) {
 				System.out.println("Le fichier a été transféré.");
+				uploadDAO.getInstance().uploadFile(MyFile, 1);
 			}
 
 		} catch (IOException ex) {

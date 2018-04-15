@@ -2,31 +2,20 @@ package drive.main;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
 
 import drive.dao.loginDAO;
 import drive.pojo.Membre;
-import drive.pojo.FTPUpload;
-import javax.swing.JProgressBar;
-import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.Cursor;
@@ -102,7 +91,7 @@ public class home extends JFrame {
 		JLabel lblCompte = new JLabel("Compte : ");
 		lblCompte.setFont(new Font("Century Gothic", Font.BOLD, 22));
 		lblCompte.setForeground(Color.WHITE);
-		lblCompte.setBounds(399, 116, 332, 52);
+		lblCompte.setBounds(358, 45, 332, 52);
 		panel.add(lblCompte);
 		MotionPanel.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
@@ -158,8 +147,9 @@ public class home extends JFrame {
 		home_menu.setLayout(null);
 		
 		JLabel label = new JLabel("");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setIcon(new ImageIcon(home.class.getResource("/images/home.png")));
-		label.setBounds(10, 0, 35, 45);
+		label.setBounds(0, 0, 56, 45);
 		home_menu.add(label);
 		
 		JLabel lblHome = new JLabel("Accueil");
@@ -184,8 +174,9 @@ public class home extends JFrame {
 		menu_panel.add(upload_menu);
 		
 		JLabel label_1 = new JLabel("");
+		label_1.setHorizontalAlignment(SwingConstants.CENTER);
 		label_1.setIcon(new ImageIcon(home.class.getResource("/images/upload2.png")));
-		label_1.setBounds(10, 0, 35, 45);
+		label_1.setBounds(0, 0, 56, 45);
 		upload_menu.add(label_1);
 		
 		JLabel lblEnvoyerUnFichier = new JLabel("Envoyer un fichier");
@@ -210,8 +201,9 @@ public class home extends JFrame {
 		menu_panel.add(files_menu);
 		
 		JLabel label_2 = new JLabel("");
+		label_2.setHorizontalAlignment(SwingConstants.CENTER);
 		label_2.setIcon(new ImageIcon(home.class.getResource("/images/files.png")));
-		label_2.setBounds(10, 0, 35, 45);
+		label_2.setBounds(0, 0, 56, 45);
 		files_menu.add(label_2);
 		
 		JLabel lblMesFichiers = new JLabel("Mes fichiers");
@@ -228,8 +220,9 @@ public class home extends JFrame {
 		menu_panel.add(share_menu);
 		
 		JLabel label_4 = new JLabel("");
+		label_4.setHorizontalAlignment(SwingConstants.CENTER);
 		label_4.setIcon(new ImageIcon(home.class.getResource("/images/share.png")));
-		label_4.setBounds(10, 0, 35, 45);
+		label_4.setBounds(0, 0, 56, 45);
 		share_menu.add(label_4);
 		
 		JLabel lblPartagAvecMoi = new JLabel("Partag\u00E9 avec moi");
@@ -242,12 +235,13 @@ public class home extends JFrame {
 		account_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		account_menu.setLayout(null);
 		account_menu.setBackground(new Color(50, 50, 50));
-		account_menu.setBounds(0, 330, 205, 45);
+		account_menu.setBounds(0, 375, 205, 45);
 		menu_panel.add(account_menu);
 		
 		JLabel label_6 = new JLabel("");
+		label_6.setHorizontalAlignment(SwingConstants.CENTER);
 		label_6.setIcon(new ImageIcon(home.class.getResource("/images/account.png")));
-		label_6.setBounds(10, 0, 35, 45);
+		label_6.setBounds(0, 0, 56, 45);
 		account_menu.add(label_6);
 		
 		JLabel lblMonCompte = new JLabel("Mon compte");
@@ -262,10 +256,27 @@ public class home extends JFrame {
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
 		
+		JPanel archives_menu = new JPanel();
+		archives_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		archives_menu.setLayout(null);
+		archives_menu.setBackground(new Color(50, 50, 50));
+		archives_menu.setBounds(0, 330, 205, 45);
+		menu_panel.add(archives_menu);
+		
+		JLabel label_5 = new JLabel("");
+		label_5.setHorizontalAlignment(SwingConstants.CENTER);
+		label_5.setIcon(new ImageIcon(home.class.getResource("/images/archive.png")));
+		label_5.setBounds(0, 0, 56, 45);
+		archives_menu.add(label_5);
+		
+		JLabel lblArchives = new JLabel("Archives");
+		lblArchives.setForeground(Color.WHITE);
+		lblArchives.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblArchives.setBounds(66, 0, 139, 45);
+		archives_menu.add(lblArchives);
+		
 		panel_upload.setVisible(true);
 		files_panel.setVisible(false);
-
-//		modifyLabel();
 
 	}
 }
