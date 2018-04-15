@@ -2,37 +2,22 @@ package drive.main;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.TooManyListenersException;
-
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
@@ -41,29 +26,20 @@ import drive.dao.loginDAO;
 import drive.pojo.Membre;
 import drive.pojo.FTPUpload;
 import javax.swing.JProgressBar;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
+import javax.swing.JTextField;
 import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+import java.awt.Cursor;
 
 public class home extends JFrame {
 
 	private JPanel contentPane;
-	private JPanel panel_upload;
 	
-	private JLabel lbl_upload_txt;
-	private JLabel lbl_progres_total;
-	private JLabel lbl_progres_fichier;
-	
-	private JProgressBar progressBar_file;
-	private JProgressBar progressBar_total;
-	
-	private String fileName;
-	private int upload_file_size;
-	private int fileNumber;
-	
+	private Upload_panel panel_upload;
+	private Files_panel files_panel;
 	
 	private int xMouse, yMouse;
+	public static JLabel lbl_progres_fichier_p;
 
 	/**
 	 * Launch the application.
@@ -73,10 +49,15 @@ public class home extends JFrame {
 	 * Create the frame.
 	 */
 	public home(int user_id) {
+		
+		List<Membre> user = loginDAO.getInstance().userInfo(user_id);
+		String user_name = user.get(0).getUsername();
+		
+		setTitle("Cloud - " + user_name);
 		setUndecorated(true);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 450);
+		setBounds(100, 100, 800, 520);
 		setLocationRelativeTo(null); // Permet de centrer le programme
 
 		contentPane = new JPanel();
@@ -86,7 +67,7 @@ public class home extends JFrame {
 
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(32, 33, 35));
-		panel.setBounds(0, 0, 600, 450);
+		panel.setBounds(0, 0, 800, 520);
 		contentPane.add(panel);
 		panel.setLayout(null);
 
@@ -104,7 +85,7 @@ public class home extends JFrame {
 		btnX.setFocusable(false);
 		btnX.setForeground(Color.WHITE);
 		btnX.setBackground(Color.RED);
-		btnX.setBounds(565, 11, 25, 23);
+		btnX.setBounds(771, 4, 25, 25);
 		panel.add(btnX);
 
 		/**
@@ -113,14 +94,15 @@ public class home extends JFrame {
 
 		JPanel MotionPanel = new JPanel();
 		MotionPanel.setOpaque(false);
+		MotionPanel.setBackground(new Color(240, 248, 255));
 		MotionPanel.setFocusable(false);
-		MotionPanel.setBounds(0, 0, 600, 34);
+		MotionPanel.setBounds(0, 0, 800, 34);
 		panel.add(MotionPanel);
 
 		JLabel lblCompte = new JLabel("Compte : ");
 		lblCompte.setFont(new Font("Century Gothic", Font.BOLD, 22));
 		lblCompte.setForeground(Color.WHITE);
-		lblCompte.setBounds(54, 67, 332, 52);
+		lblCompte.setBounds(399, 116, 332, 52);
 		panel.add(lblCompte);
 		MotionPanel.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
@@ -140,125 +122,150 @@ public class home extends JFrame {
 			}
 		});
 
-		List<Membre> user = loginDAO.getInstance().userInfo(user_id);
-		lblCompte.setText("Compte : " + user.get(0).getUsername());
-
-		panel_upload = new JPanel();
-		panel_upload.setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), null));
-		panel_upload.setBounds(10, 150, 580, 289);
-		panel_upload.setBackground(new Color(32, 33, 35));
-		panel.add(panel_upload);
-		panel_upload.setLayout(null);
+		lblCompte.setText("Compte : " + user_name);
 		
-		lbl_upload_txt = new JLabel("Glissez vos fichiez ici");
-		lbl_upload_txt.setHorizontalAlignment(SwingConstants.CENTER);
-		lbl_upload_txt.setFont(new Font("Century Gothic", Font.BOLD, 22));
-		lbl_upload_txt.setForeground(Color.WHITE);
-		lbl_upload_txt.setBounds(10, 152, 560, 50);
-		panel_upload.add(lbl_upload_txt);
+		
+//		Intégration des panel
+		
+		files_panel = new Files_panel();
+		files_panel.setLocation(0, 0);
+		
+		panel_upload = new Upload_panel();
+		panel_upload.setLocation(0, 0);
+		
+//		Panel dynamique qui permet l'affichage des autres pannels
+		JPanel panel_dyna = new JPanel();
+		panel_dyna.setBounds(210, 213, 580, 296);
+		panel.add(panel_dyna);
+		panel_dyna.setBackground(new Color(32, 33, 35));
+		panel_dyna.setLayout(null);
+		
+		panel_dyna.add(panel_upload);
+		panel_dyna.add(files_panel);
+		
+//		Panel Menu
+		JPanel menu_panel = new JPanel();
+		menu_panel.setBounds(0, 0, 205, 520);
+		menu_panel.setBackground(new Color(45, 45, 45));
+		panel.add(menu_panel);
+		menu_panel.setLayout(null);
+		
+		JPanel home_menu = new JPanel();
+		home_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		home_menu.setBounds(0, 150, 205, 45);
+		home_menu.setBackground(new Color(66, 66, 66));
+		menu_panel.add(home_menu);
+		home_menu.setLayout(null);
 		
 		JLabel label = new JLabel("");
-		label.setIcon(new ImageIcon("C:\\Users\\trsai\\Desktop\\java\\drive\\drive\\upload.png"));
-		label.setBounds(208, 11, 164, 130);
-		panel_upload.add(label);
+		label.setIcon(new ImageIcon(home.class.getResource("/images/home.png")));
+		label.setBounds(10, 0, 35, 45);
+		home_menu.add(label);
 		
-		progressBar_total = new JProgressBar();
-		progressBar_total.setForeground(new Color(0, 128, 128));
-		progressBar_total.setBounds(10, 270, 560, 14);
-		panel_upload.add(progressBar_total);
+		JLabel lblHome = new JLabel("Accueil");
+		lblHome.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblHome.setForeground(new Color(255, 255, 255));
+		lblHome.setBounds(66, 0, 139, 45);
+		home_menu.add(lblHome);
 		
-		progressBar_file = new JProgressBar();
-		progressBar_file.setForeground(new Color(0, 128, 128));
-		progressBar_file.setBounds(10, 225, 560, 14);
-		panel_upload.add(progressBar_file);
-		
-		lbl_progres_fichier = new JLabel("Fichier :");
-		lbl_progres_fichier.setForeground(new Color(255, 255, 255));
-		lbl_progres_fichier.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lbl_progres_fichier.setBounds(10, 200, 560, 14);
-		panel_upload.add(lbl_progres_fichier);
-		
-		lbl_progres_total = new JLabel("Progression totale :");
-		lbl_progres_total.setForeground(Color.WHITE);
-		lbl_progres_total.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lbl_progres_total.setBounds(10, 245, 560, 15);
-		panel_upload.add(lbl_progres_total);
-
-		JProgressBar progressBar = new JProgressBar();
-		progressBar.setBounds(10, 113, 580, 23);
-		panel.add(progressBar);
-
-		JButton btnNewButton = new JButton("New button");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		JPanel upload_menu = new JPanel();
+		upload_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//		Action après click
+		upload_menu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				panel_upload.setVisible(true);
+				files_panel.setVisible(false);
 			}
 		});
-		btnNewButton.setBounds(501, 87, 89, 23);
-		panel.add(btnNewButton);
-
-		// ActionListener actionListener = new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		Thread stepper = new FTPUpload(progressBar);
-		stepper.start();
-		// }
-		// };
-		// btnNewButton.addActionListener(actionListener);
-
-		modifyLabel();
-
-	}
-
-	public void modifyLabel() {
-		@SuppressWarnings("serial")
-		TransferHandler th = new TransferHandler() {
-
+		upload_menu.setLayout(null);
+		upload_menu.setBackground(new Color(50, 50, 50));
+		upload_menu.setBounds(0, 195, 205, 45);
+		menu_panel.add(upload_menu);
+		
+		JLabel label_1 = new JLabel("");
+		label_1.setIcon(new ImageIcon(home.class.getResource("/images/upload2.png")));
+		label_1.setBounds(10, 0, 35, 45);
+		upload_menu.add(label_1);
+		
+		JLabel lblEnvoyerUnFichier = new JLabel("Envoyer un fichier");
+		lblEnvoyerUnFichier.setForeground(Color.WHITE);
+		lblEnvoyerUnFichier.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblEnvoyerUnFichier.setBounds(66, 0, 139, 45);
+		upload_menu.add(lblEnvoyerUnFichier);
+		
+		JPanel files_menu = new JPanel();
+		files_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//		Action après click
+		files_menu.addMouseListener(new MouseAdapter() {
 			@Override
-			public boolean canImport(JComponent comp, DataFlavor[] tf) {
-				return true;
-			};
+			public void mouseClicked(MouseEvent arg0) {
+				files_panel.setVisible(true);
+				panel_upload.setVisible(false);
+			}
+		});
+		files_menu.setLayout(null);
+		files_menu.setBackground(new Color(50, 50, 50));
+		files_menu.setBounds(0, 240, 205, 45);
+		menu_panel.add(files_menu);
+		
+		JLabel label_2 = new JLabel("");
+		label_2.setIcon(new ImageIcon(home.class.getResource("/images/files.png")));
+		label_2.setBounds(10, 0, 35, 45);
+		files_menu.add(label_2);
+		
+		JLabel lblMesFichiers = new JLabel("Mes fichiers");
+		lblMesFichiers.setForeground(Color.WHITE);
+		lblMesFichiers.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblMesFichiers.setBounds(66, 0, 139, 45);
+		files_menu.add(lblMesFichiers);
+		
+		JPanel share_menu = new JPanel();
+		share_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		share_menu.setLayout(null);
+		share_menu.setBackground(new Color(50, 50, 50));
+		share_menu.setBounds(0, 285, 205, 45);
+		menu_panel.add(share_menu);
+		
+		JLabel label_4 = new JLabel("");
+		label_4.setIcon(new ImageIcon(home.class.getResource("/images/share.png")));
+		label_4.setBounds(10, 0, 35, 45);
+		share_menu.add(label_4);
+		
+		JLabel lblPartagAvecMoi = new JLabel("Partag\u00E9 avec moi");
+		lblPartagAvecMoi.setForeground(Color.WHITE);
+		lblPartagAvecMoi.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblPartagAvecMoi.setBounds(66, 0, 139, 45);
+		share_menu.add(lblPartagAvecMoi);
+		
+		JPanel account_menu = new JPanel();
+		account_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		account_menu.setLayout(null);
+		account_menu.setBackground(new Color(50, 50, 50));
+		account_menu.setBounds(0, 330, 205, 45);
+		menu_panel.add(account_menu);
+		
+		JLabel label_6 = new JLabel("");
+		label_6.setIcon(new ImageIcon(home.class.getResource("/images/account.png")));
+		label_6.setBounds(10, 0, 35, 45);
+		account_menu.add(label_6);
+		
+		JLabel lblMonCompte = new JLabel("Mon compte");
+		lblMonCompte.setForeground(Color.WHITE);
+		lblMonCompte.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblMonCompte.setBounds(66, 0, 139, 45);
+		account_menu.add(lblMonCompte);
+		
+		JLabel label_3 = new JLabel("");
+		label_3.setHorizontalAlignment(SwingConstants.CENTER);
+		label_3.setIcon(new ImageIcon(home.class.getResource("/images/cloud.png")));
+		label_3.setBounds(0, 0, 205, 146);
+		menu_panel.add(label_3);
+		
+		panel_upload.setVisible(true);
+		files_panel.setVisible(false);
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean importData(JComponent comp, Transferable t) {
-				List<File> files;
-				try {
-					files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					upload_file_size = files.size();
-					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
-					
-					for (File file : files) {
-						SwingUtilities.invokeLater(new Progress_Update());
-						fileNumber = files.indexOf(file) + 1;
-						fileName = file.getName();
-						String filePath = file.toString();
-						System.out.println("Envoi du fichier " + fileNumber + "/" + upload_file_size);
-						
-						FTPUpload.Upload(filePath);
-					}
-				} catch (UnsupportedFlavorException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-		};
-		panel_upload.setTransferHandler(th);
-	}
-	public class Progress_Update extends Thread {
-		private static final int DELAY = 200;
-		@Override
-		public void run() {
-			try {
-				progressBar_total.setMaximum(upload_file_size);
-				progressBar_total.setValue(fileNumber);
-				lbl_progres_fichier.setText("Fichier : " + fileName);
-				lbl_progres_total.setText("Progression totale : " + fileNumber + "/" + upload_file_size);
-				Thread.sleep(DELAY);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		modifyLabel();
+
 	}
 }

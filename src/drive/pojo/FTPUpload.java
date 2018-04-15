@@ -27,17 +27,13 @@ private static int DELAY = 200;
 	}
 
 	public void run() {
-//	  int minimum = progressBar.getMinimum();
-//	  int maximum = progressBar.getMaximum();
-//	  for (int i = minimum; i < maximum; i++) {
-//	    try {
-//	      int value = percent;
-//	      progressBar.setValue(value);
-//	
-//	      Thread.sleep(DELAY);
-//	    } catch (InterruptedException ignoredException) {
-//	    }
-//	  }
+	  for (int i = 0; i < 100; i++) {
+	    try {
+	    	home.lbl_progres_fichier_p.setText(i +"%");
+	      Thread.sleep(DELAY);
+	    } catch (InterruptedException ignoredException) {
+	    }
+	  }
 	}
 
 	public static void Upload(String file) {
@@ -56,6 +52,7 @@ private static int DELAY = 200;
 		       percent = (int)(totalBytesTransferred*100/MyFile.length());
 		       progressBar.setValue(percent);
 		       System.out.println(percent +"%");
+		       home.lbl_progres_fichier_p.setText(percent +"%");
 
 		    }
 

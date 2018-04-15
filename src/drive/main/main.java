@@ -70,6 +70,7 @@ public class main extends JFrame {
 	 * Create the frame.
 	 */
 	public main() {
+		setTitle("Cloud - Connexion");
 		setUndecorated(true);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -194,7 +195,7 @@ public class main extends JFrame {
 		
 		JLabel label_img = new JLabel("");
 		label_img.setFocusable(false);
-		label_img.setIcon(new ImageIcon("C:\\Users\\trsai\\Desktop\\java\\cloud.png"));
+		label_img.setIcon(new ImageIcon(main.class.getResource("/images/cloud.png")));
 		label_img.setBounds(214, 18, 172, 111);
 		panel.add(label_img);
 		
