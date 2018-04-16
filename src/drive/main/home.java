@@ -19,31 +19,28 @@ import drive.pojo.Membre;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.Cursor;
+import java.awt.SystemColor;
 
 public class home extends JFrame {
 
 	private JPanel contentPane;
 
-	private Upload_panel panel_upload;
-	private Files_panel files_panel;
+	private JPanel home_panel;
+	private JPanel panel_upload;
+	private JPanel files_panel;
+	private JPanel share_panel;
+	private JPanel archives_panel;
+	private JPanel account_panel;
 
 	private int xMouse, yMouse;
 	public static JLabel lbl_progres_fichier_p;
 	
 	//Menu panel
-	private JPanel home_menu;
-	private JPanel upload_menu;
-	private JPanel files_menu;
-	private JPanel share_menu;
-	private JPanel archives_menu;
-	private JPanel account_menu;
 	
-	private boolean home_menu_Selected = false;
-	private boolean upload_menu_Selected = false;
-	private boolean files_menu_Selected = false;
-	private boolean share_menu_Selected = false;
-	private boolean account_menu_Selected = false;
-	private boolean archives_menu_Selected = false;
+	private JPanel[] Menu_Panel = new JPanel[6];
+	private boolean[] Menu = new boolean[6];
+	private JPanel Menu_active;
+	
 
 
 	/**
@@ -54,7 +51,6 @@ public class home extends JFrame {
 	 * Create the frame.
 	 */
 	public home(int user_id) {
-
 		List<Membre> user = loginDAO.getInstance().userInfo(user_id);
 		String user_name = user.get(0).getUsername();
 
@@ -80,7 +76,18 @@ public class home extends JFrame {
 		 * Boutton quitté
 		 */
 
-		JButton btnX = new JButton("X");
+		JButton btnX = new JButton("\u2715");
+		btnX.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				btnX.setOpaque(true);
+			}
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				btnX.setOpaque(false);
+			}
+		});
+		btnX.setOpaque(false);
 		btnX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				System.exit(0);
@@ -90,12 +97,35 @@ public class home extends JFrame {
 		btnX.setFocusable(false);
 		btnX.setForeground(Color.WHITE);
 		btnX.setBackground(Color.RED);
-		btnX.setBounds(771, 4, 25, 25);
+		btnX.setBounds(760, 0, 40, 34);
 		panel.add(btnX);
 
 		/**
 		 * Déplacement fenetre
 		 */
+		
+		JButton btnMinimise = new JButton("__");
+		btnMinimise.setFocusable(false);
+		btnMinimise.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnMinimise.setOpaque(true);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnMinimise.setOpaque(false);
+			}
+		});
+		btnMinimise.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnMinimise.setOpaque(false);
+		btnMinimise.setBackground(SystemColor.activeCaption);
+		btnMinimise.setBorder(null);
+		btnMinimise.setForeground(Color.WHITE);
+		btnMinimise.setBounds(720, 0, 40, 34);
+		panel.add(btnMinimise);
 
 		JPanel MotionPanel = new JPanel();
 		MotionPanel.setOpaque(false);
@@ -129,25 +159,50 @@ public class home extends JFrame {
 
 		lblCompte.setText("Compte : " + user_name);
 
-		// Intégration des panel
+		/**
+		 *  Intégration des panel
+		 */
 
-		files_panel = new Files_panel();
-		files_panel.setLocation(0, 0);
 
+		
+		home_panel = new Home_panel();
+		home_panel.setLocation(0, 0);
+		
 		panel_upload = new Upload_panel();
 		panel_upload.setLocation(0, 0);
+		
+		files_panel = new Files_panel();
+		files_panel.setLocation(0, 0);
+		
+		share_panel = new Share_panel();
+		share_panel.setLocation(0, 0);
+		
+		archives_panel = new Archives_panel();
+		archives_panel.setLocation(0, 0);
+		
+		account_panel = new Account_panel();
+		account_panel.setLocation(0, 0);
 
-		// Panel dynamique qui permet l'affichage des autres pannels
+
+		/**
+		 * Panel dynamique qui permet l'affichage des autres pannels
+		 */
 		JPanel panel_dyna = new JPanel();
 		panel_dyna.setBounds(210, 213, 580, 296);
 		panel.add(panel_dyna);
 		panel_dyna.setBackground(new Color(32, 33, 35));
 		panel_dyna.setLayout(null);
 
+		panel_dyna.add(home_panel);
 		panel_dyna.add(panel_upload);
 		panel_dyna.add(files_panel);
+		panel_dyna.add(share_panel);
+		panel_dyna.add(archives_panel);
+		panel_dyna.add(account_panel);
 
-		// Panel Menu
+		/**
+		 *  Panel Menu
+		 */
 		JPanel menu_panel = new JPanel();
 		menu_panel.setBounds(0, 0, 205, 520);
 		menu_panel.setBackground(new Color(45, 45, 45));
@@ -160,22 +215,29 @@ public class home extends JFrame {
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
 		
-//		String[] MenuList = {"home_menu", "upload_menu", "files_menu", "share_menu", "archives_menu", "account_menu"};
+		/**
+		 * Initialisation
+		 */
+		Menu[0] = true;
+		Menu_active = home_panel;
+		home_panel.setVisible(true);
+		
 
-		home_menu = new JPanel();
-		home_menu.addMouseListener(new MouseAdapter() {
+		/**
+		 * Bouton Accueil
+		 */
+		Menu_Panel[0] = new JPanel();
+		Menu_Panel[0].addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JPanel parent = (JPanel) e.getSource();
-				parent.setBackground(new Color(66, 66, 66));
-				home_menu_Selected = true;
-
 				//Reset
-				upload_menu.setBackground(new Color(50, 50, 50));
-				files_menu.setBackground(new Color(50, 50, 50));
-				share_menu.setBackground(new Color(50, 50, 50));
-				archives_menu.setBackground(new Color(50, 50, 50));
-				account_menu.setBackground(new Color(50, 50, 50));
+				MenuReset();
+				
+				MenuClick(e, 0);
+				
+				Menu_active = home_panel;
+				home_panel.setVisible(true);
+
 				
 			}
 
@@ -189,46 +251,48 @@ public class home extends JFrame {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				JPanel parent = (JPanel) e.getSource();
-				if(!home_menu_Selected) {
+				if(!Menu[0]) {
 					parent.setBackground(new Color(50, 50, 50));
 					parent.revalidate();
 				}
 			}
 		});
-		home_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		home_menu.setBounds(0, 150, 205, 45);
-		home_menu.setBackground(new Color(66, 66, 66));
-		menu_panel.add(home_menu);
-		home_menu.setLayout(null);
+		Menu_Panel[0].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		Menu_Panel[0].setBounds(0, 150, 205, 45);
+		Menu_Panel[0].setBackground(new Color(66, 66, 66));
+		menu_panel.add(Menu_Panel[0]);
+		Menu_Panel[0].setLayout(null);
 
 		JLabel label = new JLabel("");
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setIcon(new ImageIcon(home.class.getResource("/images/home.png")));
 		label.setBounds(0, 0, 56, 45);
-		home_menu.add(label);
+		Menu_Panel[0].add(label);
 
 		JLabel lblHome = new JLabel("Accueil");
 		lblHome.setFont(new Font("Century Gothic", Font.BOLD, 14));
 		lblHome.setForeground(new Color(255, 255, 255));
 		lblHome.setBounds(66, 0, 139, 45);
-		home_menu.add(lblHome);
+		Menu_Panel[0].add(lblHome);
+		
+		/**
+		 * Bouton Envoyer un fichier
+		 */
 
-		upload_menu = new JPanel();
-		upload_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		// Action après click
-		upload_menu.addMouseListener(new MouseAdapter() {
+		Menu_Panel[1] = new JPanel();
+		Menu_Panel[1].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		
+		Menu_Panel[1].addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JPanel parent = (JPanel) e.getSource();
-				parent.setBackground(new Color(66, 66, 66));
-				upload_menu_Selected = true;
-
 				//Reset
-				home_menu.setBackground(new Color(50, 50, 50));
-				files_menu.setBackground(new Color(50, 50, 50));
-				share_menu.setBackground(new Color(50, 50, 50));
-				archives_menu.setBackground(new Color(50, 50, 50));
-				account_menu.setBackground(new Color(50, 50, 50));
+				MenuReset();
+				
+				MenuClick(e, 1);
+				
+				Menu_active = panel_upload;
+				panel_upload.setVisible(true);
+
 			}
 
 			@Override
@@ -241,48 +305,46 @@ public class home extends JFrame {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				JPanel parent = (JPanel) e.getSource();
-				if(!upload_menu_Selected) {
+				if(!Menu[1]) {
 					parent.setBackground(new Color(50, 50, 50));
 					parent.revalidate();
 				}
 			}
 		});
-		upload_menu.setLayout(null);
-		upload_menu.setBackground(new Color(50, 50, 50));
-		upload_menu.setBounds(0, 195, 205, 45);
-		menu_panel.add(upload_menu);
+		Menu_Panel[1].setLayout(null);
+		Menu_Panel[1].setBackground(new Color(50, 50, 50));
+		Menu_Panel[1].setBounds(0, 195, 205, 45);
+		menu_panel.add(Menu_Panel[1]);
 
 		JLabel label_1 = new JLabel("");
 		label_1.setHorizontalAlignment(SwingConstants.CENTER);
 		label_1.setIcon(new ImageIcon(home.class.getResource("/images/upload2.png")));
 		label_1.setBounds(0, 0, 56, 45);
-		upload_menu.add(label_1);
+		Menu_Panel[1].add(label_1);
 
 		JLabel lblEnvoyerUnFichier = new JLabel("Envoyer un fichier");
 		lblEnvoyerUnFichier.setForeground(Color.WHITE);
 		lblEnvoyerUnFichier.setFont(new Font("Century Gothic", Font.BOLD, 14));
 		lblEnvoyerUnFichier.setBounds(66, 0, 139, 45);
-		upload_menu.add(lblEnvoyerUnFichier);
+		Menu_Panel[1].add(lblEnvoyerUnFichier);
+		
+		/**
+		 * Bouton Mes fichiers
+		 */
 
-		files_menu = new JPanel();
-		files_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		Menu_Panel[2] = new JPanel();
+		Menu_Panel[2].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		// Action après click
-		files_menu.addMouseListener(new MouseAdapter() {
+		Menu_Panel[2].addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JPanel parent = (JPanel) e.getSource();
-				parent.setBackground(new Color(66, 66, 66));
-				
-				files_panel.setVisible(true);
-				panel_upload.setVisible(false);
-				files_menu_Selected = true;
-
 				//Reset
-				home_menu.setBackground(new Color(50, 50, 50));
-				upload_menu.setBackground(new Color(50, 50, 50));
-				share_menu.setBackground(new Color(50, 50, 50));
-				archives_menu.setBackground(new Color(50, 50, 50));
-				account_menu.setBackground(new Color(50, 50, 50));
+				MenuReset();
+				
+				MenuClick(e, 2);
+				
+				Menu_active = files_panel;
+				files_panel.setVisible(true);
 			}
 
 			@Override
@@ -295,47 +357,46 @@ public class home extends JFrame {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				JPanel parent = (JPanel) e.getSource();
-				if(!files_menu_Selected) {
+				if(!Menu[2]) {
 					parent.setBackground(new Color(50, 50, 50));
 					parent.revalidate();
 				}
 			}
 		});
-		files_menu.setLayout(null);
-		files_menu.setBackground(new Color(50, 50, 50));
-		files_menu.setBounds(0, 240, 205, 45);
-		menu_panel.add(files_menu);
+		Menu_Panel[2].setLayout(null);
+		Menu_Panel[2].setBackground(new Color(50, 50, 50));
+		Menu_Panel[2].setBounds(0, 240, 205, 45);
+		menu_panel.add(Menu_Panel[2]);
 
 		JLabel label_2 = new JLabel("");
 		label_2.setHorizontalAlignment(SwingConstants.CENTER);
 		label_2.setIcon(new ImageIcon(home.class.getResource("/images/files.png")));
 		label_2.setBounds(0, 0, 56, 45);
-		files_menu.add(label_2);
+		Menu_Panel[2].add(label_2);
 
 		JLabel lblMesFichiers = new JLabel("Mes fichiers");
 		lblMesFichiers.setForeground(Color.WHITE);
 		lblMesFichiers.setFont(new Font("Century Gothic", Font.BOLD, 14));
 		lblMesFichiers.setBounds(66, 0, 139, 45);
-		files_menu.add(lblMesFichiers);
+		Menu_Panel[2].add(lblMesFichiers);
+		
+		/**
+		 * Bouton partagé avec moi
+		 */
 
-		share_menu = new JPanel();
-		share_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		share_menu.addMouseListener(new MouseAdapter() {
+		Menu_Panel[3] = new JPanel();
+		Menu_Panel[3].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		Menu_Panel[3].addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JPanel parent = (JPanel) e.getSource();
-				parent.setBackground(new Color(66, 66, 66));
-				
-				files_panel.setVisible(true);
-				panel_upload.setVisible(false);
-				share_menu_Selected = true;
-
 				//Reset
-				home_menu.setBackground(new Color(50, 50, 50));
-				upload_menu.setBackground(new Color(50, 50, 50));
-				files_menu.setBackground(new Color(50, 50, 50));
-				archives_menu.setBackground(new Color(50, 50, 50));
-				account_menu.setBackground(new Color(50, 50, 50));
+				MenuReset();
+				
+				MenuClick(e, 3);
+				
+				Menu_active = share_panel;
+				share_panel.setVisible(true);
+
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -346,47 +407,45 @@ public class home extends JFrame {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				JPanel parent = (JPanel)e.getSource();
-				if(!share_menu_Selected) {
+				if(!Menu[3]) {
 					parent.setBackground(new Color(50, 50, 50));
 					parent.revalidate();
 				}
 			}
 		});
-		share_menu.setLayout(null);
-		share_menu.setBackground(new Color(50, 50, 50));
-		share_menu.setBounds(0, 285, 205, 45);
-		menu_panel.add(share_menu);
+		Menu_Panel[3].setLayout(null);
+		Menu_Panel[3].setBackground(new Color(50, 50, 50));
+		Menu_Panel[3].setBounds(0, 285, 205, 45);
+		menu_panel.add(Menu_Panel[3]);
 
 		JLabel label_4 = new JLabel("");
 		label_4.setHorizontalAlignment(SwingConstants.CENTER);
 		label_4.setIcon(new ImageIcon(home.class.getResource("/images/share.png")));
 		label_4.setBounds(0, 0, 56, 45);
-		share_menu.add(label_4);
+		Menu_Panel[3].add(label_4);
 
 		JLabel lblPartagAvecMoi = new JLabel("Partag\u00E9 avec moi");
 		lblPartagAvecMoi.setForeground(Color.WHITE);
 		lblPartagAvecMoi.setFont(new Font("Century Gothic", Font.BOLD, 14));
 		lblPartagAvecMoi.setBounds(66, 0, 139, 45);
-		share_menu.add(lblPartagAvecMoi);
+		Menu_Panel[3].add(lblPartagAvecMoi);
+		
+		/**
+		 * Bouton archives
+		 */
+		Menu_Panel[4] = new JPanel();
+		Menu_Panel[4].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		Menu_Panel[4].addMouseListener(new MouseAdapter() {
 
-		account_menu = new JPanel();
-		account_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		account_menu.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JPanel parent = (JPanel) e.getSource();
-				parent.setBackground(new Color(66, 66, 66));
-				
-				files_panel.setVisible(true);
-				panel_upload.setVisible(false);
-				account_menu_Selected = true;
-
 				//Reset
-				home_menu.setBackground(new Color(50, 50, 50));
-				upload_menu.setBackground(new Color(50, 50, 50));
-				files_menu.setBackground(new Color(50, 50, 50));
-				share_menu.setBackground(new Color(50, 50, 50));
-				archives_menu.setBackground(new Color(50, 50, 50));
+				MenuReset();
+				
+				MenuClick(e, 4);
+				
+				Menu_active = archives_panel;
+				archives_panel.setVisible(true);
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -397,98 +456,96 @@ public class home extends JFrame {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				JPanel parent = (JPanel)e.getSource();
-				if(!account_menu_Selected) {
+				if(!Menu[4]) {
 					parent.setBackground(new Color(50, 50, 50));
 					parent.revalidate();
 				}
 			}
 		});
-		account_menu.setLayout(null);
-		account_menu.setBackground(new Color(50, 50, 50));
-		account_menu.setBounds(0, 375, 205, 45);
-		menu_panel.add(account_menu);
-
-		JLabel label_6 = new JLabel("");
-		label_6.setHorizontalAlignment(SwingConstants.CENTER);
-		label_6.setIcon(new ImageIcon(home.class.getResource("/images/account.png")));
-		label_6.setBounds(0, 0, 56, 45);
-		account_menu.add(label_6);
-
-		JLabel lblMonCompte = new JLabel("Mon compte");
-		lblMonCompte.setForeground(Color.WHITE);
-		lblMonCompte.setFont(new Font("Century Gothic", Font.BOLD, 14));
-		lblMonCompte.setBounds(66, 0, 139, 45);
-		account_menu.add(lblMonCompte);
-
-		archives_menu = new JPanel();
-		archives_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		archives_menu.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				JPanel parent = (JPanel) e.getSource();
-				parent.setBackground(new Color(66, 66, 66));
-				
-				files_panel.setVisible(true);
-				panel_upload.setVisible(false);
-				home_menu_Selected = true;
-
-				//Reset
-				home_menu.setBackground(new Color(50, 50, 50));
-				upload_menu.setBackground(new Color(50, 50, 50));
-				files_menu.setBackground(new Color(50, 50, 50));
-				share_menu.setBackground(new Color(50, 50, 50));
-				account_menu.setBackground(new Color(50, 50, 50));
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				JPanel parent = (JPanel)e.getSource();
-			    parent.setBackground(new Color(66, 66, 66));
-			    parent.revalidate();
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				JPanel parent = (JPanel)e.getSource();
-				if(!archives_menu_Selected) {
-					parent.setBackground(new Color(50, 50, 50));
-					parent.revalidate();
-				}
-			}
-		});
-		archives_menu.setLayout(null);
-		archives_menu.setBackground(new Color(50, 50, 50));
-		archives_menu.setBounds(0, 330, 205, 45);
-		menu_panel.add(archives_menu);
+		Menu_Panel[4].setLayout(null);
+		Menu_Panel[4].setBackground(new Color(50, 50, 50));
+		Menu_Panel[4].setBounds(0, 330, 205, 45);
+		menu_panel.add(Menu_Panel[4]);
 
 		JLabel label_5 = new JLabel("");
 		label_5.setHorizontalAlignment(SwingConstants.CENTER);
 		label_5.setIcon(new ImageIcon(home.class.getResource("/images/archive.png")));
 		label_5.setBounds(0, 0, 56, 45);
-		archives_menu.add(label_5);
+		Menu_Panel[4].add(label_5);
 
 		JLabel lblArchives = new JLabel("Archives");
 		lblArchives.setForeground(Color.WHITE);
 		lblArchives.setFont(new Font("Century Gothic", Font.BOLD, 14));
 		lblArchives.setBounds(66, 0, 139, 45);
-		archives_menu.add(lblArchives);
+		Menu_Panel[4].add(lblArchives);
 
-		panel_upload.setVisible(true);
-		files_panel.setVisible(false);
+		/**
+		 * Bouton Mon compte
+		 */
+		Menu_Panel[5] = new JPanel();
+		Menu_Panel[5].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		Menu_Panel[5].addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				//Reset
+				MenuReset();
+				
+				MenuClick(e, 5);
+				
+				Menu_active = account_panel;
+				account_panel.setVisible(true);
+
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+			    parent.setBackground(new Color(66, 66, 66));
+			    parent.revalidate();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+				if(!Menu[5]) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
+		Menu_Panel[5].setLayout(null);
+		Menu_Panel[5].setBackground(new Color(50, 50, 50));
+		Menu_Panel[5].setBounds(0, 375, 205, 45);
+		menu_panel.add(Menu_Panel[5]);
+
+		JLabel label_6 = new JLabel("");
+		label_6.setHorizontalAlignment(SwingConstants.CENTER);
+		label_6.setIcon(new ImageIcon(home.class.getResource("/images/account.png")));
+		label_6.setBounds(0, 0, 56, 45);
+		Menu_Panel[5].add(label_6);
+
+		JLabel lblMonCompte = new JLabel("Mon compte");
+		lblMonCompte.setForeground(Color.WHITE);
+		lblMonCompte.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblMonCompte.setBounds(66, 0, 139, 45);
+		Menu_Panel[5].add(lblMonCompte);
+
 
 	}
-	public void MenuReset() {
-		home_menu.setBackground(new Color(50, 50, 50));
-		upload_menu.setBackground(new Color(50, 50, 50));
-		files_menu.setBackground(new Color(50, 50, 50));
-		share_menu.setBackground(new Color(50, 50, 50));
-		account_menu.setBackground(new Color(50, 50, 50));
-		archives_menu.setBackground(new Color(50, 50, 50));
+	
+	public void MenuClick(MouseEvent e, int nb) {
+		JPanel parent = (JPanel) e.getSource();
+		parent.setBackground(new Color(66, 66, 66));
 		
-		home_menu_Selected = false;
-		upload_menu_Selected = false;
-		files_menu_Selected = false;
-		share_menu_Selected = false;
-		account_menu_Selected = false;
-		archives_menu_Selected = false;
+		Menu_active.setVisible(false);
+		
+		Menu[nb] = true;
+	}
+	
+	public void MenuReset() {
+		Color color = new Color(50, 50, 50);
+		
+		for(int i = 0; i < Menu.length; i++) {
+			Menu[i] = false;
+			Menu_Panel[i].setBackground(color);
+		}
 	}
 }

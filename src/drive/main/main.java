@@ -175,7 +175,18 @@ public class main extends JFrame {
 		 * Boutton quitté
 		 */
 		
-		JButton btnX = new JButton("X");
+		JButton btnX = new JButton("\u2715");
+		btnX.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				btnX.setOpaque(true);
+			}
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				btnX.setOpaque(false);
+			}
+		});
+		btnX.setOpaque(false);
 		btnX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				System.exit(0);
@@ -185,7 +196,7 @@ public class main extends JFrame {
 		btnX.setFocusable(false);
 		btnX.setForeground(Color.WHITE);
 		btnX.setBackground(Color.RED);
-		btnX.setBounds(565, 11, 25, 23);
+		btnX.setBounds(560, 0, 40, 34);
 		panel.add(btnX);
 		
 		/**
