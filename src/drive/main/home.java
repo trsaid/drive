@@ -23,12 +23,28 @@ import java.awt.Cursor;
 public class home extends JFrame {
 
 	private JPanel contentPane;
-	
+
 	private Upload_panel panel_upload;
 	private Files_panel files_panel;
-	
+
 	private int xMouse, yMouse;
 	public static JLabel lbl_progres_fichier_p;
+	
+	//Menu panel
+	private JPanel home_menu;
+	private JPanel upload_menu;
+	private JPanel files_menu;
+	private JPanel share_menu;
+	private JPanel archives_menu;
+	private JPanel account_menu;
+	
+	private boolean home_menu_Selected = false;
+	private boolean upload_menu_Selected = false;
+	private boolean files_menu_Selected = false;
+	private boolean share_menu_Selected = false;
+	private boolean account_menu_Selected = false;
+	private boolean archives_menu_Selected = false;
+
 
 	/**
 	 * Launch the application.
@@ -38,10 +54,10 @@ public class home extends JFrame {
 	 * Create the frame.
 	 */
 	public home(int user_id) {
-		
+
 		List<Membre> user = loginDAO.getInstance().userInfo(user_id);
 		String user_name = user.get(0).getUsername();
-		
+
 		setTitle("Cloud - " + user_name);
 		setUndecorated(true);
 		setResizable(false);
@@ -112,171 +128,367 @@ public class home extends JFrame {
 		});
 
 		lblCompte.setText("Compte : " + user_name);
-		
-		
-//		Intégration des panel
-		
+
+		// Intégration des panel
+
 		files_panel = new Files_panel();
 		files_panel.setLocation(0, 0);
-		
+
 		panel_upload = new Upload_panel();
 		panel_upload.setLocation(0, 0);
-		
-//		Panel dynamique qui permet l'affichage des autres pannels
+
+		// Panel dynamique qui permet l'affichage des autres pannels
 		JPanel panel_dyna = new JPanel();
 		panel_dyna.setBounds(210, 213, 580, 296);
 		panel.add(panel_dyna);
 		panel_dyna.setBackground(new Color(32, 33, 35));
 		panel_dyna.setLayout(null);
-		
+
 		panel_dyna.add(panel_upload);
 		panel_dyna.add(files_panel);
-		
-//		Panel Menu
+
+		// Panel Menu
 		JPanel menu_panel = new JPanel();
 		menu_panel.setBounds(0, 0, 205, 520);
 		menu_panel.setBackground(new Color(45, 45, 45));
 		panel.add(menu_panel);
 		menu_panel.setLayout(null);
-		
-		JPanel home_menu = new JPanel();
-		home_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		home_menu.setBounds(0, 150, 205, 45);
-		home_menu.setBackground(new Color(66, 66, 66));
-		menu_panel.add(home_menu);
-		home_menu.setLayout(null);
-		
-		JLabel label = new JLabel("");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setIcon(new ImageIcon(home.class.getResource("/images/home.png")));
-		label.setBounds(0, 0, 56, 45);
-		home_menu.add(label);
-		
-		JLabel lblHome = new JLabel("Accueil");
-		lblHome.setFont(new Font("Century Gothic", Font.BOLD, 14));
-		lblHome.setForeground(new Color(255, 255, 255));
-		lblHome.setBounds(66, 0, 139, 45);
-		home_menu.add(lblHome);
-		
-		JPanel upload_menu = new JPanel();
-		upload_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//		Action après click
-		upload_menu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				panel_upload.setVisible(true);
-				files_panel.setVisible(false);
-			}
-		});
-		upload_menu.setLayout(null);
-		upload_menu.setBackground(new Color(50, 50, 50));
-		upload_menu.setBounds(0, 195, 205, 45);
-		menu_panel.add(upload_menu);
-		
-		JLabel label_1 = new JLabel("");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setIcon(new ImageIcon(home.class.getResource("/images/upload2.png")));
-		label_1.setBounds(0, 0, 56, 45);
-		upload_menu.add(label_1);
-		
-		JLabel lblEnvoyerUnFichier = new JLabel("Envoyer un fichier");
-		lblEnvoyerUnFichier.setForeground(Color.WHITE);
-		lblEnvoyerUnFichier.setFont(new Font("Century Gothic", Font.BOLD, 14));
-		lblEnvoyerUnFichier.setBounds(66, 0, 139, 45);
-		upload_menu.add(lblEnvoyerUnFichier);
-		
-		JPanel files_menu = new JPanel();
-		files_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//		Action après click
-		files_menu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				files_panel.setVisible(true);
-				panel_upload.setVisible(false);
-			}
-		});
-		files_menu.setLayout(null);
-		files_menu.setBackground(new Color(50, 50, 50));
-		files_menu.setBounds(0, 240, 205, 45);
-		menu_panel.add(files_menu);
-		
-		JLabel label_2 = new JLabel("");
-		label_2.setHorizontalAlignment(SwingConstants.CENTER);
-		label_2.setIcon(new ImageIcon(home.class.getResource("/images/files.png")));
-		label_2.setBounds(0, 0, 56, 45);
-		files_menu.add(label_2);
-		
-		JLabel lblMesFichiers = new JLabel("Mes fichiers");
-		lblMesFichiers.setForeground(Color.WHITE);
-		lblMesFichiers.setFont(new Font("Century Gothic", Font.BOLD, 14));
-		lblMesFichiers.setBounds(66, 0, 139, 45);
-		files_menu.add(lblMesFichiers);
-		
-		JPanel share_menu = new JPanel();
-		share_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		share_menu.setLayout(null);
-		share_menu.setBackground(new Color(50, 50, 50));
-		share_menu.setBounds(0, 285, 205, 45);
-		menu_panel.add(share_menu);
-		
-		JLabel label_4 = new JLabel("");
-		label_4.setHorizontalAlignment(SwingConstants.CENTER);
-		label_4.setIcon(new ImageIcon(home.class.getResource("/images/share.png")));
-		label_4.setBounds(0, 0, 56, 45);
-		share_menu.add(label_4);
-		
-		JLabel lblPartagAvecMoi = new JLabel("Partag\u00E9 avec moi");
-		lblPartagAvecMoi.setForeground(Color.WHITE);
-		lblPartagAvecMoi.setFont(new Font("Century Gothic", Font.BOLD, 14));
-		lblPartagAvecMoi.setBounds(66, 0, 139, 45);
-		share_menu.add(lblPartagAvecMoi);
-		
-		JPanel account_menu = new JPanel();
-		account_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		account_menu.setLayout(null);
-		account_menu.setBackground(new Color(50, 50, 50));
-		account_menu.setBounds(0, 375, 205, 45);
-		menu_panel.add(account_menu);
-		
-		JLabel label_6 = new JLabel("");
-		label_6.setHorizontalAlignment(SwingConstants.CENTER);
-		label_6.setIcon(new ImageIcon(home.class.getResource("/images/account.png")));
-		label_6.setBounds(0, 0, 56, 45);
-		account_menu.add(label_6);
-		
-		JLabel lblMonCompte = new JLabel("Mon compte");
-		lblMonCompte.setForeground(Color.WHITE);
-		lblMonCompte.setFont(new Font("Century Gothic", Font.BOLD, 14));
-		lblMonCompte.setBounds(66, 0, 139, 45);
-		account_menu.add(lblMonCompte);
-		
+
 		JLabel label_3 = new JLabel("");
 		label_3.setHorizontalAlignment(SwingConstants.CENTER);
 		label_3.setIcon(new ImageIcon(home.class.getResource("/images/cloud.png")));
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
 		
-		JPanel archives_menu = new JPanel();
+//		String[] MenuList = {"home_menu", "upload_menu", "files_menu", "share_menu", "archives_menu", "account_menu"};
+
+		home_menu = new JPanel();
+		home_menu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				home_menu_Selected = true;
+
+				//Reset
+				upload_menu.setBackground(new Color(50, 50, 50));
+				files_menu.setBackground(new Color(50, 50, 50));
+				share_menu.setBackground(new Color(50, 50, 50));
+				archives_menu.setBackground(new Color(50, 50, 50));
+				account_menu.setBackground(new Color(50, 50, 50));
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				parent.revalidate();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				if(!home_menu_Selected) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
+		home_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		home_menu.setBounds(0, 150, 205, 45);
+		home_menu.setBackground(new Color(66, 66, 66));
+		menu_panel.add(home_menu);
+		home_menu.setLayout(null);
+
+		JLabel label = new JLabel("");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setIcon(new ImageIcon(home.class.getResource("/images/home.png")));
+		label.setBounds(0, 0, 56, 45);
+		home_menu.add(label);
+
+		JLabel lblHome = new JLabel("Accueil");
+		lblHome.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblHome.setForeground(new Color(255, 255, 255));
+		lblHome.setBounds(66, 0, 139, 45);
+		home_menu.add(lblHome);
+
+		upload_menu = new JPanel();
+		upload_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		// Action après click
+		upload_menu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				upload_menu_Selected = true;
+
+				//Reset
+				home_menu.setBackground(new Color(50, 50, 50));
+				files_menu.setBackground(new Color(50, 50, 50));
+				share_menu.setBackground(new Color(50, 50, 50));
+				archives_menu.setBackground(new Color(50, 50, 50));
+				account_menu.setBackground(new Color(50, 50, 50));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				parent.revalidate();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				if(!upload_menu_Selected) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
+		upload_menu.setLayout(null);
+		upload_menu.setBackground(new Color(50, 50, 50));
+		upload_menu.setBounds(0, 195, 205, 45);
+		menu_panel.add(upload_menu);
+
+		JLabel label_1 = new JLabel("");
+		label_1.setHorizontalAlignment(SwingConstants.CENTER);
+		label_1.setIcon(new ImageIcon(home.class.getResource("/images/upload2.png")));
+		label_1.setBounds(0, 0, 56, 45);
+		upload_menu.add(label_1);
+
+		JLabel lblEnvoyerUnFichier = new JLabel("Envoyer un fichier");
+		lblEnvoyerUnFichier.setForeground(Color.WHITE);
+		lblEnvoyerUnFichier.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblEnvoyerUnFichier.setBounds(66, 0, 139, 45);
+		upload_menu.add(lblEnvoyerUnFichier);
+
+		files_menu = new JPanel();
+		files_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		// Action après click
+		files_menu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				
+				files_panel.setVisible(true);
+				panel_upload.setVisible(false);
+				files_menu_Selected = true;
+
+				//Reset
+				home_menu.setBackground(new Color(50, 50, 50));
+				upload_menu.setBackground(new Color(50, 50, 50));
+				share_menu.setBackground(new Color(50, 50, 50));
+				archives_menu.setBackground(new Color(50, 50, 50));
+				account_menu.setBackground(new Color(50, 50, 50));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				parent.revalidate();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				if(!files_menu_Selected) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
+		files_menu.setLayout(null);
+		files_menu.setBackground(new Color(50, 50, 50));
+		files_menu.setBounds(0, 240, 205, 45);
+		menu_panel.add(files_menu);
+
+		JLabel label_2 = new JLabel("");
+		label_2.setHorizontalAlignment(SwingConstants.CENTER);
+		label_2.setIcon(new ImageIcon(home.class.getResource("/images/files.png")));
+		label_2.setBounds(0, 0, 56, 45);
+		files_menu.add(label_2);
+
+		JLabel lblMesFichiers = new JLabel("Mes fichiers");
+		lblMesFichiers.setForeground(Color.WHITE);
+		lblMesFichiers.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblMesFichiers.setBounds(66, 0, 139, 45);
+		files_menu.add(lblMesFichiers);
+
+		share_menu = new JPanel();
+		share_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		share_menu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				
+				files_panel.setVisible(true);
+				panel_upload.setVisible(false);
+				share_menu_Selected = true;
+
+				//Reset
+				home_menu.setBackground(new Color(50, 50, 50));
+				upload_menu.setBackground(new Color(50, 50, 50));
+				files_menu.setBackground(new Color(50, 50, 50));
+				archives_menu.setBackground(new Color(50, 50, 50));
+				account_menu.setBackground(new Color(50, 50, 50));
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+			    parent.setBackground(new Color(66, 66, 66));
+			    parent.revalidate();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+				if(!share_menu_Selected) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
+		share_menu.setLayout(null);
+		share_menu.setBackground(new Color(50, 50, 50));
+		share_menu.setBounds(0, 285, 205, 45);
+		menu_panel.add(share_menu);
+
+		JLabel label_4 = new JLabel("");
+		label_4.setHorizontalAlignment(SwingConstants.CENTER);
+		label_4.setIcon(new ImageIcon(home.class.getResource("/images/share.png")));
+		label_4.setBounds(0, 0, 56, 45);
+		share_menu.add(label_4);
+
+		JLabel lblPartagAvecMoi = new JLabel("Partag\u00E9 avec moi");
+		lblPartagAvecMoi.setForeground(Color.WHITE);
+		lblPartagAvecMoi.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblPartagAvecMoi.setBounds(66, 0, 139, 45);
+		share_menu.add(lblPartagAvecMoi);
+
+		account_menu = new JPanel();
+		account_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		account_menu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				
+				files_panel.setVisible(true);
+				panel_upload.setVisible(false);
+				account_menu_Selected = true;
+
+				//Reset
+				home_menu.setBackground(new Color(50, 50, 50));
+				upload_menu.setBackground(new Color(50, 50, 50));
+				files_menu.setBackground(new Color(50, 50, 50));
+				share_menu.setBackground(new Color(50, 50, 50));
+				archives_menu.setBackground(new Color(50, 50, 50));
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+			    parent.setBackground(new Color(66, 66, 66));
+			    parent.revalidate();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+				if(!account_menu_Selected) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
+		account_menu.setLayout(null);
+		account_menu.setBackground(new Color(50, 50, 50));
+		account_menu.setBounds(0, 375, 205, 45);
+		menu_panel.add(account_menu);
+
+		JLabel label_6 = new JLabel("");
+		label_6.setHorizontalAlignment(SwingConstants.CENTER);
+		label_6.setIcon(new ImageIcon(home.class.getResource("/images/account.png")));
+		label_6.setBounds(0, 0, 56, 45);
+		account_menu.add(label_6);
+
+		JLabel lblMonCompte = new JLabel("Mon compte");
+		lblMonCompte.setForeground(Color.WHITE);
+		lblMonCompte.setFont(new Font("Century Gothic", Font.BOLD, 14));
+		lblMonCompte.setBounds(66, 0, 139, 45);
+		account_menu.add(lblMonCompte);
+
+		archives_menu = new JPanel();
 		archives_menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		archives_menu.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPanel parent = (JPanel) e.getSource();
+				parent.setBackground(new Color(66, 66, 66));
+				
+				files_panel.setVisible(true);
+				panel_upload.setVisible(false);
+				home_menu_Selected = true;
+
+				//Reset
+				home_menu.setBackground(new Color(50, 50, 50));
+				upload_menu.setBackground(new Color(50, 50, 50));
+				files_menu.setBackground(new Color(50, 50, 50));
+				share_menu.setBackground(new Color(50, 50, 50));
+				account_menu.setBackground(new Color(50, 50, 50));
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+			    parent.setBackground(new Color(66, 66, 66));
+			    parent.revalidate();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JPanel parent = (JPanel)e.getSource();
+				if(!archives_menu_Selected) {
+					parent.setBackground(new Color(50, 50, 50));
+					parent.revalidate();
+				}
+			}
+		});
 		archives_menu.setLayout(null);
 		archives_menu.setBackground(new Color(50, 50, 50));
 		archives_menu.setBounds(0, 330, 205, 45);
 		menu_panel.add(archives_menu);
-		
+
 		JLabel label_5 = new JLabel("");
 		label_5.setHorizontalAlignment(SwingConstants.CENTER);
 		label_5.setIcon(new ImageIcon(home.class.getResource("/images/archive.png")));
 		label_5.setBounds(0, 0, 56, 45);
 		archives_menu.add(label_5);
-		
+
 		JLabel lblArchives = new JLabel("Archives");
 		lblArchives.setForeground(Color.WHITE);
 		lblArchives.setFont(new Font("Century Gothic", Font.BOLD, 14));
 		lblArchives.setBounds(66, 0, 139, 45);
 		archives_menu.add(lblArchives);
-		
+
 		panel_upload.setVisible(true);
 		files_panel.setVisible(false);
 
+	}
+	public void MenuReset() {
+		home_menu.setBackground(new Color(50, 50, 50));
+		upload_menu.setBackground(new Color(50, 50, 50));
+		files_menu.setBackground(new Color(50, 50, 50));
+		share_menu.setBackground(new Color(50, 50, 50));
+		account_menu.setBackground(new Color(50, 50, 50));
+		archives_menu.setBackground(new Color(50, 50, 50));
+		
+		home_menu_Selected = false;
+		upload_menu_Selected = false;
+		files_menu_Selected = false;
+		share_menu_Selected = false;
+		account_menu_Selected = false;
+		archives_menu_Selected = false;
 	}
 }

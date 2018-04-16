@@ -5,19 +5,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import drive.dao.loginDAO;
-import drive.pojo.Membre;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.List;
 import java.util.prefs.Preferences;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
@@ -139,6 +134,10 @@ public class main extends JFrame {
 		
 		JCheckBox chckbx_Save = new JCheckBox("Se souvenir de moi");
 		
+		if(pref.get("username", null) == null || pref.get("password", null) == null || pref.get("save", null) == null) {
+			pref.put("save", "non");
+			saveUser("", "");
+		}
 		
 		if(loadCheck().equals("oui")) {
 			chckbx_Save.setSelected(true);

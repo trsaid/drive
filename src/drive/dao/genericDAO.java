@@ -12,7 +12,7 @@ public class genericDAO {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("DRIVER OK");
 
-			String url = "jdbc:mysql://localhost:3306/drive";
+			String url = "jdbc:mysql://localhost:3306/test";
 			String username = "site";
 			String password = "said";
 
