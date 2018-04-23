@@ -17,7 +17,7 @@ public class membreDAO extends genericDAO {
 		Statement statement;
 		try {
 			statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT id_me, username, password FROM membre");
+			ResultSet rs = statement.executeQuery("SELECT id, username, password FROM utilisateurs");
 			while (rs.next()) {
 				Membre membre = new Membre();
 				membre.setId(rs.getInt(1));

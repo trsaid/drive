@@ -1,6 +1,5 @@
 package drive.dao;
 
-import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,44 +7,33 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import drive.pojo.Membre;
 
-public class loginDAO extends genericDAO {
+public class dossierDAO extends genericDAO {
 	
-	public static Membre membre;
+private final static dossierDAO INSTANCE = new dossierDAO();
 	
-	private final static loginDAO INSTANCE = new loginDAO();
-	
-	public int login(String username, String password) throws Exception {
+	public List<String> listDossier(int id_user) throws Exception {
 		
+		ArrayList<String> listDossiers = new ArrayList<String>();
 		Connection conn = connexionBDD();
 		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hash = digest.digest(password.getBytes("UTF-8"));
-			password = DatatypeConverter.printHexBinary(hash);
-			
-			PreparedStatement prep1 = conn.prepareStatement("SELECT id FROM utilisateurs WHERE username = ? AND password = ?");
-			
-			prep1.setString(1, username);
-			prep1.setString(2, password);
-			
+			PreparedStatement prep1 = conn.prepareStatement("SELECT id, nom_dossier, date_upload FROM dossier WHERE id_utilisateurs = ?");
+			prep1.setInt(1, id_user);
 			ResultSet rs = prep1.executeQuery();
-			rs.next();
-			
-			int user_id = rs.getInt(1);
-			
-			if(rs.first()) {
-				return user_id;
-			}else {
-				return 0;
+			while (rs.next()) {
+//				Membre membre = new Membre();
+//				membre.setId(rs.getInt(1));
+//				membre.setUsername(rs.getString(2));
+//				membre.setPassword(rs.getString(3));
+				listDossiers.add(rs.getString(2));
+//				System.out.println("tab : " + listeMembres.get(0).getUsername());
 			}
-			
+			return listDossiers;
 			
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
-			return 0;
+			return null;
 		}
 	}
 	
@@ -59,7 +47,7 @@ public class loginDAO extends genericDAO {
 			ResultSet rs = prep1.executeQuery();
 			rs.next();
 			
-			membre = new Membre();
+			Membre membre = new Membre();
 			membre.setId(rs.getInt(1));
 			membre.setUsername(rs.getString(2));
 			info.add(membre);
@@ -72,7 +60,7 @@ public class loginDAO extends genericDAO {
 		}
 	}
 	
-	public static loginDAO getInstance() {
+	public static dossierDAO getInstance() {
 		return INSTANCE;
 	}
 
