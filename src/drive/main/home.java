@@ -203,6 +203,7 @@ public class home extends JFrame {
 		String[] Menu_name = { "Accueil", "Envoyer un fichier", "Mes fichiers", "Partag\u00E9 avec moi", "Archives", "Mon compte" };
 		// Nom des images pour chaque menu sans extention (png seulement).
 		String[] Menu_icon = { "home", "upload2", "files", "share", "archive", "account" };
+		
 		int Menu_i = 0;
 		for (String name : Menu_name) {
 			Menu_Panel[Menu_i] = new JPanel();
@@ -218,6 +219,7 @@ public class home extends JFrame {
 
 					Menu_active = panel_list[innerMenu_i];
 					panel_list[innerMenu_i].setVisible(true);
+					panel_list[innerMenu_i].revalidate();
 
 				}
 
@@ -269,6 +271,8 @@ public class home extends JFrame {
 		parent.setBackground(new Color(66, 66, 66));
 
 		Menu_active.setVisible(false);
+		Menu_active.revalidate();
+		
 
 		Menu[nb] = true;
 	}

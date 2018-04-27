@@ -31,7 +31,7 @@ public class uploadDAO extends genericDAO {
 		PreparedStatement statement = null;
 
 		String insertQuerry = "INSERT INTO fichier"
-				+ "(nom, poid, date_upload, type, id_dossier) VALUES"
+				+ "(nom_fichier, poids_ko, date_upload, type, id_dossier) VALUES"
 				+ "(?,?,?,?,?)";
 
 		try {
