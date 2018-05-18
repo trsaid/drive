@@ -29,7 +29,7 @@ public class Upload_panel extends JPanel {
 	private JLabel lbl_upload_txt;
 	public static JLabel lbl_progres_fichier;
 	public static JLabel lbl_progres_total;
-	private JLabel lbl_progres_fichier_p;
+	public static JLabel lbl_progres_fichier_p;
 	
 	public static JProgressBar progressBar_total;
 	public static JProgressBar progressBar_file;
@@ -110,14 +110,18 @@ public class Upload_panel extends JPanel {
 					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
 					
 					SwingUtilities.invokeLater(new Progress_Update());
-					for (File file : files) {
-						fileNumber = files.indexOf(file) + 1;
-						fileName = file.getName();
-						String filePath = file.toString();
-						System.out.println("Envoi du fichier " + fileNumber + "/" + upload_file_size);
-						
-						FTPUpload.Upload(filePath);
-					}
+					
+					FTPUpload U = new FTPUpload(files);
+					U.start();
+//					for (File file : files) {
+//						fileNumber = files.indexOf(file) + 1;
+//						fileName = file.getName();
+//						String filePath = file.toString();
+//						System.out.println("Envoi du fichier " + fileNumber + "/" + upload_file_size);
+//						
+//						FTPUpload U = new FTPUpload(filePath);
+//						U.start();
+//					}
 				} catch (UnsupportedFlavorException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

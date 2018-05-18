@@ -1,3 +1,9 @@
 /.metadata/
+/.gitattributes
+/.gitignore
+/.project
+/.settings/
+/Apache Commons Net 3.6.jar
 /drive/
 /images/
+/mysql-connector-java-5.1.45-bin.jar

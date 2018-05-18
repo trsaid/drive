@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import drive.dao.loginDAO;
+import drive.pojo.FTPUpload;
 import drive.pojo.Membre;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -62,7 +63,7 @@ public class home extends JFrame {
 		panel.setBounds(0, 0, 800, 520);
 		contentPane.add(panel);
 		panel.setLayout(null);
-
+		
 		/**
 		 * Boutton quitté
 		 */
