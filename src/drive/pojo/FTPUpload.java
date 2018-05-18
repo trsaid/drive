@@ -40,6 +40,8 @@ public class FTPUpload extends Thread {
 			
 			String fileName = file.toString();
 			System.out.println(fileName);
+			
+			Upload_panel.progressBar_total.setMaximum(filesList.size());
 
 			File MyFile = new File(fileName);
 			final Integer innerfileNum = new Integer(fileNum);
@@ -55,7 +57,6 @@ public class FTPUpload extends Thread {
 					Upload_panel.lbl_progres_fichier_p.setText(percent + "%");
 					Upload_panel.lbl_progres_fichier.setText("Fichier : " + file.getName());
 					Upload_panel.lbl_progres_total.setText("Progression totale : " + innerfileNum + "/" + filesList.size());
-					System.out.println(percent + "%");
 
 				}
 

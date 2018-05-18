@@ -15,13 +15,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 
 import drive.pojo.FTPUpload;
-import drive.pojo.Progress_Update;
 
 @SuppressWarnings("serial")
 public class Upload_panel extends JPanel {
@@ -33,10 +31,9 @@ public class Upload_panel extends JPanel {
 	
 	public static JProgressBar progressBar_total;
 	public static JProgressBar progressBar_file;
-	
-	public static String fileName;
+
 	public static int upload_file_size;
-	public static int fileNumber;
+
 
 	/**
 	 * Create the panel.
@@ -109,19 +106,9 @@ public class Upload_panel extends JPanel {
 					upload_file_size = files.size();
 					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
 					
-					SwingUtilities.invokeLater(new Progress_Update());
 					
 					FTPUpload U = new FTPUpload(files);
 					U.start();
-//					for (File file : files) {
-//						fileNumber = files.indexOf(file) + 1;
-//						fileName = file.getName();
-//						String filePath = file.toString();
-//						System.out.println("Envoi du fichier " + fileNumber + "/" + upload_file_size);
-//						
-//						FTPUpload U = new FTPUpload(filePath);
-//						U.start();
-//					}
 				} catch (UnsupportedFlavorException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
