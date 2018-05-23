@@ -1,13 +1,21 @@
 package drive.pojo;
 
+import java.util.ArrayList;
 import java.util.Date;
+
+import drive.dao.dossierDAO;
 
 public class Dossier {
 	private Integer id;
 	private String nom;
 	private Date date;
 	private Integer idUser;
+	private ArrayList<Fichier> fileList;
 	
+	
+	public Dossier() {
+//		fileList = dossierDAO.getInstance().listFichier(id);
+	}
 	
 	public Integer getId() {
 		return id;
@@ -32,6 +40,12 @@ public class Dossier {
 	}
 	public void setIdUser(Integer id_user) {
 		this.idUser = id_user;
+	}
+	public ArrayList<Fichier> getFileList() {
+		return fileList;
+	}
+	public void setFileList(ArrayList<Fichier> fileList) {
+		this.fileList = fileList;
 	}
 
 }

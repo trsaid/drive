@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import drive.pojo.Membre;
+
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -15,7 +17,9 @@ import java.awt.Color;
 import javax.swing.ImageIcon;
 
 @SuppressWarnings("serial")
-public class main extends JFrame {
+public class Main extends JFrame {
+	
+	private static Main main_f;
 
 	private JPanel contentPane;
 	
@@ -23,19 +27,21 @@ public class main extends JFrame {
 	
 	public static JPanel RegisterPanel = new Register_panel();
 	public static JPanel login_panel = new Login_Panel();
+	
+	private static Membre user_logged;
 
 	/**
 	 * Launch the application.
 	 */
 		public static void main(String[] args) {
-			main login = new main();
-			login.setVisible(true);
+			main_f = new Main();
+			main_f.setVisible(true);
 		}
 
 	/**
 	 * Create the frame.
 	 */
-	public main() {
+	public Main() {
 		setTitle("Cloud - Connexion");
 		setUndecorated(true);
 		setResizable(false);
@@ -119,7 +125,7 @@ public class main extends JFrame {
 		
 		JLabel label_img = new JLabel("");
 		label_img.setFocusable(false);
-		label_img.setIcon(new ImageIcon(main.class.getResource("/images/cloud.png")));
+		label_img.setIcon(new ImageIcon(Main.class.getResource("/images/cloud.png")));
 		label_img.setBounds(214, 18, 172, 111);
 		panel.add(label_img);
 		
@@ -128,5 +134,16 @@ public class main extends JFrame {
 		 */
 		
 		
+	}
+	static Main getMainFrame(){
+		return main_f;
+	}
+
+	public static Membre getUser_logged() {
+		return user_logged;
+	}
+
+	public static void setUser_logged(Membre user) {
+		user_logged = user;
 	}
 }

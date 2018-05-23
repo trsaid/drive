@@ -10,6 +10,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 
 import drive.dao.loginDAO;
+import drive.pojo.Membre;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -121,9 +122,21 @@ public class Login_Panel extends JPanel {
 		chckbx_Save.setBounds(140, 277, 300, 23);
 		add(chckbx_Save);
 		JButton loginButton = new JButton("Se connecter");
+		loginButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				loginButton.setBackground(new Color(252, 129, 74));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				loginButton.setBackground(new Color(153, 78, 44));
+			}
+		});
+		loginButton.setBorderPainted(false);
+		loginButton.setFocusable(false);
 		loginButton.setFont(new Font("Tahoma", Font.BOLD, 15));
 		loginButton.setForeground(Color.WHITE);
-		loginButton.setBackground(new Color(0, 128, 128));
+		loginButton.setBackground(new Color(153, 78, 44));
 		loginButton.setBounds(140, 311, 300, 40);
 		add(loginButton);
 		
@@ -136,8 +149,8 @@ public class Login_Panel extends JPanel {
 		lblRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				main.login_panel.setVisible(false);
-				main.RegisterPanel.setVisible(true);
+				Main.login_panel.setVisible(false);
+				Main.RegisterPanel.setVisible(true);
 			}
 		});
 		lblRegister.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -169,7 +182,7 @@ public class Login_Panel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				String uname = username.getText();
 				String pass = password.getText();
-				int logged = 0;
+				Membre logged = null;
 
 				
 				if (username.getText().isEmpty()) {
@@ -178,20 +191,23 @@ public class Login_Panel extends JPanel {
 					lbl_LoginError.setText("Veuillez entré un mot de passe.");
 				} else {
 					try {
-						logged = logindao.getInstance().login(uname, pass);
+						Main.setUser_logged(logindao.getInstance().login(uname, pass));
+						logged = Main.getUser_logged();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					if (logged == 0) {
+					if (logged == null) {
 						lbl_LoginError.setText("Nom de compte ou mot de passe invalide");
 					} else {
 						if(chckbx_Save.isSelected()) {
 							pref.put("save", "oui");
 							saveUser(uname, pass);
 						}
+						//On affiche la page d'accueil après la connexion.
 						home h = new home(logged);
 						h.setVisible(true);
-						setVisible(false);
+						//On cache la page de connexion.
+						Main.getMainFrame().setVisible(false);
 						
 					}
 				}
@@ -199,7 +215,7 @@ public class Login_Panel extends JPanel {
 		});
 
 	}
-	Preferences pref = Preferences.userNodeForPackage(main.class);
+	Preferences pref = Preferences.userNodeForPackage(Main.class);
 	public void saveUser(String username, String password) {
 		pref.put("username", username);
 		pref.put("password", password);

@@ -44,7 +44,7 @@ public class dossierDAO extends genericDAO {
 		}
 	}
 
-	public List<Fichier> listFichier(int id_dossier) {
+	public ArrayList<Fichier> listFichier(int id_dossier) {
 		ArrayList<Fichier> listFichiers = new ArrayList<Fichier>();
 		Connection conn = connexionBDD();
 		try {

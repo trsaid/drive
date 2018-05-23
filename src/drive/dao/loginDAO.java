@@ -18,7 +18,7 @@ public class loginDAO extends genericDAO {
 	
 	private final static loginDAO INSTANCE = new loginDAO();
 	
-	public int login(String username, String password) throws Exception {
+	public Membre login(String username, String password) throws Exception {
 		
 		Connection conn = connexionBDD();
 		try {
@@ -34,18 +34,16 @@ public class loginDAO extends genericDAO {
 			ResultSet rs = prep1.executeQuery();
 			rs.next();
 			
-			int user_id = rs.getInt(1);
-			
 			if(rs.first()) {
-				return user_id;
+				return membreDAO.getInstance().membreInfo("trsaid");
 			}else {
-				return 0;
+				return null;
 			}
 			
 			
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
-			return 0;
+			return null;
 		}
 	}
 	

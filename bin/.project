@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>images/right_arrow.png</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/AppData/Local/Temp/icons8_Forward_64px.png</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

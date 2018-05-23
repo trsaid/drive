@@ -85,6 +85,40 @@ public class membreDAO extends genericDAO {
 		}
 	}
 	
+	public Membre membreInfo(String username) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		String Querry = "SELECT id, username, nom, prenom, password, email "
+				+ " FROM utilisateurs WHERE "
+				+ "username = ?";
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+			
+			statement.setString(1, username);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			rs.next();
+			
+			Membre membre = new Membre();
+			membre.setId(rs.getInt(1));
+			membre.setUsername(rs.getString(2));
+			membre.setLName(rs.getString(3));
+			membre.setFName(rs.getString(4));
+			membre.setPassword(rs.getString(5));
+			membre.setEmail(rs.getString(6));
+			
+			return membre;
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			
+			return null;
+		}
+		
+	}
+	
 	
 	//rend la class sattique et retourne un seul resultat
 	public static membreDAO getInstance() {

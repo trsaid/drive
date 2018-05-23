@@ -216,8 +216,8 @@ public class Register_panel extends JPanel {
 		back_login.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				main.RegisterPanel.setVisible(false);
-				main.login_panel.setVisible(true);
+				Main.RegisterPanel.setVisible(false);
+				Main.login_panel.setVisible(true);
 			}
 		});
 

@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingConstants;
@@ -58,13 +59,13 @@ public class Files_panel extends JPanel {
 		int user_id = loginDAO.membre.getId();
 
 		List<Dossier> listDossier;
-		List<Fichier> listFichier;
+		ArrayList<Fichier> listFichier;
 		try {
 			listDossier = dossierDAO.getInstance().listDossier(user_id);
 			int nbDossier = listDossier.size();
 			
 			listFichier = dossierDAO.getInstance().listFichier(0);
-			int nbFichiers = listDossier.size();
+			int nbFichiers = listFichier.size();
 
 			JPanel[] files = new JPanel[nbDossier + nbFichiers];
 
@@ -99,6 +100,18 @@ public class Files_panel extends JPanel {
 						files[innerDi].setBackground(new Color(113, 142, 222));
 						Panel_root.removeAll();
 						Panel_root.updateUI();
+						ArrayList<Fichier> listFichiers;
+						listFichiers = unDossier.getFileList();
+						
+						for(Fichier unFichier : listFichiers) {
+							files[innerDi] = new JPanel();
+							files[innerDi].setBounds(x, y, 167, 48);
+							files[innerDi].setBorder(BorderFactory.createRaisedBevelBorder());
+							files[innerDi].setLayout(null);
+							files[innerDi].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+							files[innerDi].setBackground(new Color(40, 40, 40));
+							Panel_root.add(files[innerDi]);
+						}
 
 					}
 				});

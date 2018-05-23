@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import drive.dao.loginDAO;
-import drive.pojo.FTPUpload;
 import drive.pojo.Membre;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -42,15 +41,15 @@ public class home extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public home(int user_id) {
-		List<Membre> user = loginDAO.getInstance().userInfo(user_id);
+	public home(Membre membre) {
+		List<Membre> user = loginDAO.getInstance().userInfo(membre.getId());
 		String user_name = user.get(0).getUsername();
 
 		setTitle("Cloud - " + user_name);
 		setUndecorated(true);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 800, 520);
+		setBounds(100, 100, 800, 650);
 		setLocationRelativeTo(null); // Permet de centrer le programme
 
 		contentPane = new JPanel();
@@ -60,7 +59,7 @@ public class home extends JFrame {
 
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(32, 33, 35));
-		panel.setBounds(0, 0, 800, 520);
+		panel.setBounds(0, 0, 800, 650);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -157,7 +156,7 @@ public class home extends JFrame {
 		 * Panel dynamique qui permet l'affichage des autres panels
 		 */
 		JPanel panel_dyna = new JPanel();
-		panel_dyna.setBounds(210, 213, 580, 296);
+		panel_dyna.setBounds(212, 149, 580, 490);
 		panel.add(panel_dyna);
 		panel_dyna.setBackground(new Color(32, 33, 35));
 		panel_dyna.setLayout(null);
@@ -171,6 +170,7 @@ public class home extends JFrame {
 		for (JPanel _panel : panel_list) {
 			_panel.setLocation(0, 0);
 			panel_dyna.add(_panel);
+			_panel.setVisible(false);
 
 		}
 
@@ -178,7 +178,7 @@ public class home extends JFrame {
 		 * Panel Menu
 		 */
 		JPanel menu_panel = new JPanel();
-		menu_panel.setBounds(0, 0, 205, 520);
+		menu_panel.setBounds(0, 0, 205, 650);
 		menu_panel.setBackground(new Color(45, 45, 45));
 		panel.add(menu_panel);
 		menu_panel.setLayout(null);
@@ -188,12 +188,14 @@ public class home extends JFrame {
 		label_3.setIcon(new ImageIcon(home.class.getResource("/images/cloud.png")));
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
+		
 
 		/**
 		 * Initialisation
 		 */
 		Menu[0] = true;
 		Menu_active = panel_list[0];
+//		panel_dyna.add(panel_list[0]);
 		panel_list[0].setVisible(true);
 		
 		/**
@@ -235,7 +237,7 @@ public class home extends JFrame {
 				public void mouseExited(MouseEvent e) {
 					JPanel parent = (JPanel) e.getSource();
 					if (!Menu[innerMenu_i]) {
-						parent.setBackground(new Color(50, 50, 50));
+						parent.setBackground(new Color(45, 45, 45));
 						parent.revalidate();
 					}
 				}
@@ -248,7 +250,7 @@ public class home extends JFrame {
 			if (Menu[innerMenu_i])
 				Menu_Panel[Menu_i].setBackground(new Color(66, 66, 66));
 			else
-				Menu_Panel[Menu_i].setBackground(new Color(50, 50, 50));
+				Menu_Panel[Menu_i].setBackground(new Color(45, 45, 45));
 
 			JLabel menu_icon = new JLabel("");
 			menu_icon.setHorizontalAlignment(SwingConstants.CENTER);
@@ -279,7 +281,7 @@ public class home extends JFrame {
 	}
 
 	public void MenuReset() {
-		Color color = new Color(50, 50, 50);
+		Color color = new Color(45, 45, 45);
 
 		for (int i = 0; i < Menu.length; i++) {
 			Menu[i] = false;
