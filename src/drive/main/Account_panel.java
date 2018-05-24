@@ -3,11 +3,13 @@ package drive.main;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -16,7 +18,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentListener;
+import javax.xml.bind.DatatypeConverter;
 
+import drive.dao.membreDAO;
+import drive.pojo.Fonction;
 import drive.pojo.Membre;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,6 +29,9 @@ import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.beans.PropertyChangeEvent;
 
@@ -219,36 +227,53 @@ public class Account_panel extends JPanel {
 				String Fname = TF_Fname.getText();
 				String pass = PF_pass.getText();
 				String pass2 = PF_passConf.getText();
-				
-				
+
 				ArrayList<String> error_msg = new ArrayList<String>();
 				String error_msg_final = "";
 
-				if (Lname.equals("")) {
-					BorderError(TF_Lname, icon_2);
-					
-					error_msg.add("- Veuillez entrer votre nom.");
-				}
+				// Conversion du MDP en SHA256
+				String DialogPW = Fonction.PassEncrypt(PasswordDialog());
 
-				if (Fname.equals("")) {
-					BorderError(TF_Fname, icon_3);
-					
-					error_msg.add("- Veuillez entrer votre prénom.");
-				}
+				if (membre.getPassword().equals(DialogPW)) {
 
-				if (((!pass.equals(pass2)) || (!pass2.equals(pass))) && (!pass.equals("") || !pass2.equals(""))) {
-					BorderError(PF_pass, icon_4);
-					BorderError(PF_passConf, icon_5);
-					error_msg.add("- Les mots de passes ne sont pas identiques.");
+					//Verification nom
+					if (Lname.equals("")) {
+						BorderError(TF_Lname, icon_2);
+						error_msg.add("- Veuillez entrer votre nom.");
+
+					} else if (!membre.getLName().equals(Lname)) {
+						error_msg.add("- Votre nom a été modifier.");
+						membreDAO.getInstance().UpdateLname(membre, Lname);
+					}
+					//Verification Prénom
+					if (Fname.equals("")) {
+						BorderError(TF_Fname, icon_3);
+						error_msg.add("- Veuillez entrer votre prénom.");
+					} else if (!membre.getFName().equals(Fname)) {
+						error_msg.add("- Votre nom a été modifier.");
+						membreDAO.getInstance().UpdateFname(membre, Fname);
+					}
+					//Verification MDP
+					if ((!pass.equals(pass2)) && ((!pass.equals(null) && !pass.equals("")) || (!pass2.equals(null) && !pass2.equals("")))) {
+						BorderError(PF_pass, icon_4);
+						BorderError(PF_passConf, icon_5);
+						error_msg.add("- Les mots de passes ne sont pas identiques.");
+					} else if (pass.length() < 8 && !pass.equals("") && !pass.equals(null)) {
+						error_msg.add("- Le mot de passe doit contenir au moins 8 caractères!");
+					} else if (pass.equals(pass2) && !pass.equals(null) && !pass.equals("")) {
+						membreDAO.getInstance().UpdatePass(membre, pass);
+						
+						error_msg.add("- Votre mot de passe a été modifier.");
+					}
+
+					for (String msg : error_msg) {
+						error_msg_final = "<html>" + error_msg_final + "<br>" + msg;
+					}
+
+					lbl_error_msg.setText(error_msg_final);
+				} else {
+					lbl_error_msg.setText("Mot de passe actuel incorrect.");
 				}
-				
-				for(String msg : error_msg) {
-					error_msg_final = "<html>" + error_msg_final + "<br>" + msg;
-				}
-				
-				error_msg_final = error_msg_final;
-				
-				lbl_error_msg.setText(error_msg_final);
 			}
 		});
 		btn_submit.addMouseListener(new MouseAdapter() {
@@ -302,4 +327,21 @@ public class Account_panel extends JPanel {
 		icon.setBorder(Error_Icon);
 	}
 
+	public String PasswordDialog() {
+		JPanel panel = new JPanel();
+		JLabel label = new JLabel("Entrez votre mot de passe :");
+		JPasswordField pass = new JPasswordField(25);
+		panel.add(label);
+		panel.add(pass);
+
+		String[] options = new String[] { "Valider", "Annuler" };
+		int option = JOptionPane.showOptionDialog(Main.getMainFrame(), panel, "Confirmation", JOptionPane.NO_OPTION,
+				JOptionPane.PLAIN_MESSAGE, null, options, options[1]);
+
+		if (option == 0) {
+			return pass.getText();
+		} else {
+			return null;
+		}
+	}
 }

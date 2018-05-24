@@ -35,7 +35,7 @@ public class loginDAO extends genericDAO {
 			rs.next();
 			
 			if(rs.first()) {
-				return membreDAO.getInstance().membreInfo("trsaid");
+				return membreDAO.getInstance().membreInfo(username);
 			}else {
 				return null;
 			}

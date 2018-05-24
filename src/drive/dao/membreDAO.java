@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
+import drive.main.Main;
+import drive.pojo.Fonction;
 import drive.pojo.Membre;
 
 public class membreDAO extends genericDAO {
@@ -62,8 +64,8 @@ public class membreDAO extends genericDAO {
 		Connection conn = null;
 		PreparedStatement statement = null;
 		String insertQuerry = "INSERT INTO utilisateurs"
-				+ "(username, nom, prenom, password, email) VALUES"
-				+ "(?,?,?,?,?)";
+				+ "(username, nom, prenom, password, email) "
+				+ "VALUES(?,?,?,?,?)";
 
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -89,8 +91,8 @@ public class membreDAO extends genericDAO {
 		Connection conn = null;
 		PreparedStatement statement = null;
 		String Querry = "SELECT id, username, nom, prenom, password, email "
-				+ " FROM utilisateurs WHERE "
-				+ "username = ?";
+				+ " FROM utilisateurs "
+				+ "WHERE username = ?";
 		try {
 			conn = connexionBDD();
 			statement = conn.prepareStatement(Querry);
@@ -117,6 +119,89 @@ public class membreDAO extends genericDAO {
 			return null;
 		}
 		
+	}
+	/**
+	 * Permet de changer le nom de l'utilisateur
+	 * @param membre (Le membre actuellement connecté)
+	 * @param name   (Le nouveau nom)
+	 */
+	
+	public void UpdateLname(Membre membre, String name) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		String Querry = "UPDATE utilisateurs "
+				+ " SET nom = ? "
+				+ "WHERE username = ?";
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+			
+			statement.setString(1, name);
+			statement.setString(2, membre.getUsername());
+			
+			statement.executeUpdate();
+			
+			Main.getUser_logged().setLName(name);
+			
+		} catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Permet de changer le prénom de l'utilisateur
+	 * @param membre (Le membre actuellement connecté)
+	 * @param prenom   (Le nouveau prénom)
+	 */
+	public void UpdateFname(Membre membre, String prenom) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		String Querry = "UPDATE utilisateurs "
+				+ " SET prenom = ? "
+				+ "WHERE username = ?";
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+			
+			statement.setString(1, prenom);
+			statement.setString(2, membre.getUsername());
+			
+			statement.executeUpdate();
+			
+			Main.getUser_logged().setFName(prenom);
+			
+		} catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Permet de changer le mot de passe de l'utilisateur
+	 * @param membre (Le membre actuellement connecté)
+	 * @param pass   (Le nouveau mdp)
+	 */
+	public void UpdatePass(Membre membre, String pass) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		String Querry = "UPDATE utilisateurs "
+				+ " SET password = ? "
+				+ "WHERE username = ?";
+		
+		pass = Fonction.PassEncrypt(pass);
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+			
+			statement.setString(1, pass);
+			statement.setString(2, membre.getUsername());
+			
+			statement.executeUpdate();
+			
+			Main.getUser_logged().setPassword(pass);
+			
+		} catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
 	}
 	
 	
