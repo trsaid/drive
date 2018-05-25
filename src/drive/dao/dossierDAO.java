@@ -19,9 +19,9 @@ public class dossierDAO extends genericDAO {
 	 * 
 	 * @param id_user
 	 * @return Une liste contenant les ID et noms des dossiers d'un utilisateur
-	 * @throws Exception
+	 *
 	 */
-	public List<Dossier> listDossier(int id_user) {
+	public ArrayList<Dossier> listDossier(int id_user) {
 
 		ArrayList<Dossier> listDossiers = new ArrayList<Dossier>();
 		Connection conn = connexionBDD();
@@ -60,29 +60,6 @@ public class dossierDAO extends genericDAO {
 				listFichiers.add(fichier);
 			}
 			return listFichiers;
-
-		} catch (SQLException sqle) {
-			sqle.printStackTrace();
-			return null;
-		}
-	}
-
-	public List<Membre> userInfo(int id) {
-		ArrayList<Membre> info = new ArrayList<Membre>();
-		Connection conn = connexionBDD();
-		try {
-			PreparedStatement prep1 = conn.prepareStatement("SELECT id, username FROM utilisateurs WHERE id = ?");
-
-			prep1.setInt(1, id);
-			ResultSet rs = prep1.executeQuery();
-			rs.next();
-
-			Membre membre = new Membre();
-			membre.setId(rs.getInt(1));
-			membre.setUsername(rs.getString(2));
-			info.add(membre);
-
-			return info;
 
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();

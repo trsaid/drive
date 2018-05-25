@@ -53,6 +53,7 @@ public class Main extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		login_panel.setBounds(10, 150, 580, 500);
 		
 		getContentPane().add(login_panel);
 		login_panel.setVisible(true);

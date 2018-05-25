@@ -10,8 +10,6 @@ import drive.dao.dossierDAO;
 import drive.dao.loginDAO;
 import drive.pojo.Dossier;
 import drive.pojo.Fichier;
-import drive.pojo.Membre;
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -26,11 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.TitledBorder;
 
 public class Files_panel extends JPanel {
 
@@ -59,15 +52,11 @@ public class Files_panel extends JPanel {
 		int user_id = loginDAO.membre.getId();
 
 		List<Dossier> listDossier;
-		ArrayList<Fichier> listFichier;
 		try {
 			listDossier = dossierDAO.getInstance().listDossier(user_id);
 			int nbDossier = listDossier.size();
-			
-			listFichier = dossierDAO.getInstance().listFichier(0);
-			int nbFichiers = listFichier.size();
 
-			JPanel[] files = new JPanel[nbDossier + nbFichiers];
+			JPanel[] files = new JPanel[nbDossier];
 
 			// Di -> Index de la boucle unDossier.
 			int Di = 0;
@@ -91,26 +80,48 @@ public class Files_panel extends JPanel {
 				files[Di].setBackground(new Color(40, 40, 40));
 				Panel_root.add(files[Di]);
 
-				final Integer innerDi = new Integer(Di);
-
 				files[Di].addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 
-						files[innerDi].setBackground(new Color(113, 142, 222));
 						Panel_root.removeAll();
 						Panel_root.updateUI();
+
 						ArrayList<Fichier> listFichiers;
+						unDossier.setFileList(dossierDAO.getInstance().listFichier(unDossier.getId()));
 						listFichiers = unDossier.getFileList();
-						
-						for(Fichier unFichier : listFichiers) {
-							files[innerDi] = new JPanel();
-							files[innerDi].setBounds(x, y, 167, 48);
-							files[innerDi].setBorder(BorderFactory.createRaisedBevelBorder());
-							files[innerDi].setLayout(null);
-							files[innerDi].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-							files[innerDi].setBackground(new Color(40, 40, 40));
-							Panel_root.add(files[innerDi]);
+						int nbFichiers = listFichiers.size();
+
+						JPanel[] Fichiers_pan = new JPanel[nbFichiers];
+
+						int Di = 0;
+
+						int x = 0;
+						int y = 0;
+
+						for (Fichier unFichier : listFichiers) {
+
+							x = espaceX + (btnFileL + espaceX) * (Di % 3); // Position X du bouton
+							y = espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
+
+							Fichiers_pan[Di] = new JPanel();
+							Fichiers_pan[Di].setBounds(x, y, 167, 48);
+							Fichiers_pan[Di].setBorder(BorderFactory.createRaisedBevelBorder());
+							Fichiers_pan[Di].setLayout(null);
+							Fichiers_pan[Di].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+							Fichiers_pan[Di].setBackground(new Color(40, 40, 40));
+							Panel_root.add(Fichiers_pan[Di]);
+
+							JLabel file_name = new JLabel();
+							file_name.setBounds(40, 0, 100, 48);
+							file_name.setFont(new Font("Tahoma", Font.PLAIN, 12));
+							file_name.setForeground(new Color(255, 255, 255));
+							file_name.setText(unFichier.getNom());
+							file_name.setToolTipText(unFichier.getNom());
+							Fichiers_pan[Di].add(file_name);
+
+							Di++;
+
 						}
 
 					}
@@ -126,31 +137,7 @@ public class Files_panel extends JPanel {
 				file_name.setFont(new Font("Tahoma", Font.PLAIN, 12));
 				file_name.setForeground(new Color(255, 255, 255));
 				file_name.setText(unDossier.getNom());
-				files[Di].add(file_name);
-
-				Di++;
-			}
-
-			for (Fichier unFichier : listFichier) {
-
-				files[Di] = new JPanel();
-				files[Di].setBounds(x, y, 167, 48);
-				files[Di].setBorder(BorderFactory.createRaisedBevelBorder());
-				files[Di].setLayout(null);
-				files[Di].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				files[Di].setBackground(new Color(40, 40, 40));
-				Panel_root.add(files[Di]);
-
-				JLabel folder_icon = new JLabel("");
-				folder_icon.setIcon(new ImageIcon(home.class.getResource("/images/dossier.png")));
-				folder_icon.setBounds(12, 0, 24, 48);
-				files[Di].add(folder_icon);
-
-				JLabel file_name = new JLabel();
-				file_name.setBounds(40, 0, 100, 48);
-				file_name.setFont(new Font("Tahoma", Font.PLAIN, 12));
-				file_name.setForeground(new Color(255, 255, 255));
-				file_name.setText(unFichier.getNom());
+				file_name.setToolTipText(unDossier.getNom());
 				files[Di].add(file_name);
 
 				Di++;
@@ -169,6 +156,24 @@ public class Files_panel extends JPanel {
 		// Taille du panel à scroll
 		Panel_root.setPreferredSize(new Dimension(this.getWidth(), 90 * 4));
 		Panel_root.setLayout(null);
+
+		JLabel label = new JLabel("");
+		label.setToolTipText("Cr\u00E9er un nouveau dossier");
+		label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		label.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				label.setIcon(new ImageIcon(Files_panel.class.getResource("/images/Plus_Hover.png")));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				label.setIcon(new ImageIcon(Files_panel.class.getResource("/images/Plus.png")));
+			}
+		});
+		label.setIcon(new ImageIcon(Files_panel.class.getResource("/images/Plus.png")));
+		label.setBounds(523, 11, 25, 25);
+		Panel_root.add(label);
 		setVisible(true);
 
 	}
