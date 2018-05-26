@@ -62,7 +62,7 @@ public class home extends JFrame {
 		panel.setBounds(0, 0, 800, 650);
 		contentPane.add(panel);
 		panel.setLayout(null);
-		
+
 		/**
 		 * Boutton quitté
 		 */
@@ -188,25 +188,25 @@ public class home extends JFrame {
 		label_3.setIcon(new ImageIcon(home.class.getResource("/images/cloud.png")));
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
-		
 
 		/**
 		 * Initialisation
 		 */
 		Menu[0] = true;
 		Menu_active = panel_list[0];
-//		panel_dyna.add(panel_list[0]);
+		// panel_dyna.add(panel_list[0]);
 		panel_list[0].setVisible(true);
-		
+
 		/**
 		 * Mise en place des "boutons" du menu.
 		 */
 
 		// Nom de chaque menu
-		String[] Menu_name = { "Accueil", "Envoyer un fichier", "Mes fichiers", "Partag\u00E9 avec moi", "Archives", "Mon compte" };
+		String[] Menu_name = { "Accueil", "Envoyer un fichier", "Mes fichiers", "Partag\u00E9 avec moi", "Archives",
+				"Mon compte" };
 		// Nom des images pour chaque menu sans extention (png seulement).
 		String[] Menu_icon = { "home", "upload2", "files", "share", "archive", "account" };
-		
+
 		int Menu_i = 0;
 		for (String name : Menu_name) {
 			Menu_Panel[Menu_i] = new JPanel();
@@ -229,8 +229,10 @@ public class home extends JFrame {
 				@Override
 				public void mouseEntered(MouseEvent e) {
 					JPanel parent = (JPanel) e.getSource();
-					parent.setBackground(new Color(66, 66, 66));
-					parent.revalidate();
+					if (!Menu[innerMenu_i]) {
+						parent.setBackground(new Color(153, 78, 44));
+						parent.revalidate();
+					}
 				}
 
 				@Override
@@ -248,7 +250,7 @@ public class home extends JFrame {
 			menu_panel.add(Menu_Panel[Menu_i]);
 			Menu_Panel[Menu_i].setLayout(null);
 			if (Menu[innerMenu_i])
-				Menu_Panel[Menu_i].setBackground(new Color(66, 66, 66));
+				Menu_Panel[Menu_i].setBackground(new Color(252, 129, 74));
 			else
 				Menu_Panel[Menu_i].setBackground(new Color(45, 45, 45));
 
@@ -271,11 +273,10 @@ public class home extends JFrame {
 
 	public void MenuClick(MouseEvent e, int nb) {
 		JPanel parent = (JPanel) e.getSource();
-		parent.setBackground(new Color(66, 66, 66));
+		parent.setBackground(new Color(252, 129, 74));
 
 		Menu_active.setVisible(false);
 		Menu_active.revalidate();
-		
 
 		Menu[nb] = true;
 	}
