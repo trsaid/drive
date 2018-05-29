@@ -4,17 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JProgressBar;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.io.CopyStreamAdapter;
 
 import drive.dao.uploadDAO;
 import drive.main.Upload_panel;
-import drive.main.home;
 
 public class FTPUpload extends Thread {
 
@@ -23,6 +22,11 @@ public class FTPUpload extends Thread {
 	static JProgressBar progressBar;
 	static int percent;
 
+	static String server = "192.168.0.11";
+	static int port = 21;
+	static String user = "said";
+	static String pass = "123456";
+
 	private List<File> filesList;
 
 	public FTPUpload(List<File> files) {
@@ -30,17 +34,12 @@ public class FTPUpload extends Thread {
 	}
 
 	public void run() {
-		String server = "192.168.0.11";
-		int port = 21;
-		String user = "said";
-		String pass = "123456";
 		int fileNum = 1;
-
 		for (File file : filesList) {
-			
+
 			String fileName = file.toString();
 			System.out.println(fileName);
-			
+
 			Upload_panel.progressBar_total.setMaximum(filesList.size());
 
 			File MyFile = new File(fileName);
@@ -56,21 +55,15 @@ public class FTPUpload extends Thread {
 					Upload_panel.progressBar_total.setValue(innerfileNum);
 					Upload_panel.lbl_progres_fichier_p.setText(percent + "%");
 					Upload_panel.lbl_progres_fichier.setText("Fichier : " + file.getName());
-					Upload_panel.lbl_progres_total.setText("Progression totale : " + innerfileNum + "/" + filesList.size());
+					Upload_panel.lbl_progres_total
+							.setText("Progression totale : " + innerfileNum + "/" + filesList.size());
 
 				}
 
 			};
 
-			FTPClient ftpClient = new FTPClient();
+			FTPClient ftpClient = loginFTP();
 			try {
-
-				ftpClient.connect(server, port);
-				ftpClient.login(user, pass);
-
-				ftpClient.setCopyStreamListener(streamListener);
-				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-				ftpClient.enterLocalPassiveMode();
 
 				/*
 				 * Vérification de l'éxistance du dossier. Renvoi 550 si le dossier n'existe
@@ -87,6 +80,7 @@ public class FTPUpload extends Thread {
 					System.out.println("Dossier personnel inéxistant.");
 					System.out.println("Création en cours...");
 					ftpClient.makeDirectory("upload");
+					addDossier("upload", ftpClient);
 				}
 				System.out.println("Transfert des fichiers en cours...");
 				boolean completed = ftpClient.storeFile(FileName, inputStream);
@@ -115,4 +109,59 @@ public class FTPUpload extends Thread {
 			fileNum++;
 		}
 	}
+
+	public static FTPClient loginFTP() {
+		String server = "192.168.0.22";
+		int port = 21;
+		String user = "said";
+		String pass = "123456";
+
+		FTPClient ftpClient = new FTPClient();
+		try {
+
+			ftpClient.connect(server, port);
+
+            int replyCode = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(replyCode)) {
+                System.out.println("L'opération a échoué. Code de réponse du serveur: " + replyCode);
+                return null;
+            }
+			boolean success = ftpClient.login(user, pass);
+
+			if (!success) {
+				System.out.println("Impossible de se connecter au serveur.");
+				return null;
+			}
+
+			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+			ftpClient.enterLocalPassiveMode();
+		} catch (IOException ex) {
+			System.out.println("Une erreur est survenue lors de la connexion au FTP.");
+			ex.printStackTrace();
+		}
+		return ftpClient;
+
+	}
+
+	public static void addDossier(String name, FTPClient ftpClient) {
+		boolean success = false;
+		try {
+			int Exist_Error_code = ftpClient.cwd(name);
+			// Si le dossier n'éxiste pas.
+			if (Exist_Error_code == 550) {
+				success = ftpClient.makeDirectory(name);
+					
+				if (success) {
+					System.out.println("Le dossier " + name + " a été créé.");
+				} else {
+					System.out.println("Une erreur s'est produite lors de la création du dossier.");
+				}
+			}else {
+				System.out.println("Le dossier " + name + " est déjà éxistant.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

@@ -10,14 +10,14 @@ public class genericDAO {
 	public Connection connexionBDD() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("DRIVER OK");
+//			System.out.println("DRIVER OK");
 
 			String url = "jdbc:mysql://localhost:3306/cloud";
 			String username = "site";
 			String password = "said";
 
 			Connection con = DriverManager.getConnection(url, username, password);
-			System.out.println("connexion effective");
+//			System.out.println("connexion effective");
 			
 			return con;
 		} catch (Exception e) {

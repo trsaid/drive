@@ -136,7 +136,7 @@ public class Main extends JFrame {
 		
 		
 	}
-	static Main getMainFrame(){
+	public static Main getMainFrame(){
 		return main_f;
 	}
 
