@@ -22,15 +22,17 @@ public class FTPUpload extends Thread {
 	static JProgressBar progressBar;
 	static int percent;
 
-	static String server = "192.168.0.11";
+	static String server = "192.168.0.22";
 	static int port = 21;
 	static String user = "said";
 	static String pass = "123456";
 
 	private List<File> filesList;
+	private Dossier dest;
 
-	public FTPUpload(List<File> files) {
-		this.filesList = files;
+	public FTPUpload(List<File> files, Dossier dossier) {
+		filesList = files;
+		dest = dossier;
 	}
 
 	public void run() {
@@ -65,12 +67,14 @@ public class FTPUpload extends Thread {
 			FTPClient ftpClient = loginFTP();
 			try {
 
+				ftpClient.setCopyStreamListener(streamListener);
 				/*
 				 * Vérification de l'éxistance du dossier. Renvoi 550 si le dossier n'existe
 				 * pas, sinon 250.
 				 */
-				int Exist_Error_code = ftpClient.cwd("upload");
+				int Exist_Error_code = ftpClient.cwd(dest.getNom());
 				// System.out.println("code : " + Exist_Error_code);
+				
 
 				String FileName = MyFile.getName();
 				InputStream inputStream = new FileInputStream(MyFile);
@@ -79,18 +83,16 @@ public class FTPUpload extends Thread {
 				if (Exist_Error_code == 550) {
 					System.out.println("Dossier personnel inéxistant.");
 					System.out.println("Création en cours...");
-					ftpClient.makeDirectory("upload");
-					addDossier("upload", ftpClient);
+					addDossier(dest.getNom(), ftpClient);
 				}
 				System.out.println("Transfert des fichiers en cours...");
 				boolean completed = ftpClient.storeFile(FileName, inputStream);
-				System.out.println("1" + completed);
 
 				inputStream.close();
 
 				if (completed) {
 					System.out.println("Le fichier a été transféré.");
-					uploadDAO.getInstance().uploadFile(MyFile, 1);
+					uploadDAO.getInstance().uploadFile(MyFile, dest.getId());
 				}
 
 			} catch (IOException ex) {
@@ -111,10 +113,6 @@ public class FTPUpload extends Thread {
 	}
 
 	public static FTPClient loginFTP() {
-		String server = "192.168.0.22";
-		int port = 21;
-		String user = "said";
-		String pass = "123456";
 
 		FTPClient ftpClient = new FTPClient();
 		try {

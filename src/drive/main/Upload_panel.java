@@ -107,8 +107,8 @@ public class Upload_panel extends JPanel {
 					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
 					
 					
-					FTPUpload U = new FTPUpload(files);
-					U.start();
+//					FTPUpload U = new FTPUpload(files);
+//					U.start();
 				} catch (UnsupportedFlavorException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

@@ -1,6 +1,7 @@
 package drive.main;
 
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
@@ -15,22 +16,31 @@ import drive.pojo.Dossier;
 import drive.pojo.FTPUpload;
 import drive.pojo.Fichier;
 import drive.pojo.Fonction;
+import drive.pojo.PopClickListener;
 
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 
 public class Files_panel extends JPanel {
 
@@ -134,6 +144,8 @@ public class Files_panel extends JPanel {
 			files[Di].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			files[Di].setBackground(new Color(40, 40, 40));
 			sourcePanel.add(files[Di]);
+			
+			files[Di].addMouseListener(new PopClickListener(unDossier));
 
 			files[Di].addMouseListener(new MouseAdapter() {
 				@Override
@@ -143,9 +155,11 @@ public class Files_panel extends JPanel {
 			});
 
 			JLabel folder_icon = new JLabel("");
-			Fonction.IconHover(folder_icon, "dossier.png", "dossier_hover.png");
 			folder_icon.setBounds(12, 0, 24, 48);
 			files[Di].add(folder_icon);
+			
+			//Changer d'icone quand la souris est sur le panel
+			Fonction.IconHover(folder_icon, "dossier.png", "dossier_hover.png", files[Di]);
 
 			JLabel file_name = new JLabel();
 			file_name.setBounds(40, 0, 100, 48);
@@ -162,12 +176,6 @@ public class Files_panel extends JPanel {
 
 	public void ShowFichiers(JPanel sourcePanel, Dossier dossier) {
 
-		JLabel lblTitle = new JLabel(dossier.getNom());
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblTitle.setForeground(new Color(255, 255, 255));
-		lblTitle.setBounds(224, 11, 132, 25);
-		sourcePanel.add(lblTitle);
 
 		// Di -> Index de la boucle unDossier.
 		int Di = 0;
@@ -175,7 +183,16 @@ public class Files_panel extends JPanel {
 		y = 25 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
 		sourcePanel.removeAll();
 		sourcePanel.updateUI();
+		
+		modifyLabel(dossier);
 
+		JLabel lblTitle = new JLabel(dossier.getNom());
+		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblTitle.setForeground(new Color(255, 255, 255));
+		lblTitle.setBounds(224, 11, 132, 25);
+		sourcePanel.add(lblTitle);
+		
 		ArrayList<Fichier> listFichiers;
 		dossier.setFileList(dossierDAO.getInstance().listFichier(dossier.getId()));
 		listFichiers = dossier.getFileList();
@@ -187,7 +204,6 @@ public class Files_panel extends JPanel {
 		Fonction.IconHover(label, "icons8_Left_25px.png", "icons8_Left_25px_hover.png");
 		label.setBounds(10, 11, 25, 25);
 		sourcePanel.add(label);
-		setVisible(true);
 
 		label.addMouseListener(new MouseAdapter() {
 			@Override
@@ -217,5 +233,36 @@ public class Files_panel extends JPanel {
 
 			Di++;
 		}
+	}
+	
+	public void modifyLabel(Dossier dossier) {
+		TransferHandler th = new TransferHandler() {
+
+			@Override
+			public boolean canImport(JComponent comp, DataFlavor[] tf) {
+				return true;
+			};
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean importData(JComponent comp, Transferable t) {
+				List<File> files;
+				try {
+					files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+//					upload_file_size = files.size();
+//					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
+					
+					
+					FTPUpload U = new FTPUpload(files, dossier);
+					U.start();
+				} catch (UnsupportedFlavorException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		};
+		setTransferHandler(th);
 	}
 }

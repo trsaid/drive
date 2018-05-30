@@ -55,6 +55,23 @@ public class Fonction {
 		});
 	}
 	
+	public static void IconHover(JLabel source, String normal, String Hover, JPanel panelsource) {
+		source.setIcon(new ImageIcon(Files_panel.class.getResource("/images/" + normal)));
+		source.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		
+		panelsource.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				source.setIcon(new ImageIcon(Files_panel.class.getResource("/images/" + Hover)));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				source.setIcon(new ImageIcon(Files_panel.class.getResource("/images/" + normal)));
+			}
+		});
+	}
+	
 	public static String Custom_TF_Dialog(String Msg) {
 		JPanel panel = new JPanel();
 		JLabel label = new JLabel(Msg);
