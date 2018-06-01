@@ -13,7 +13,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.io.CopyStreamAdapter;
 
 import drive.dao.uploadDAO;
-import drive.main.Upload_panel;
+import drive.main.home;
 
 public class FTPUpload extends Thread {
 
@@ -42,7 +42,7 @@ public class FTPUpload extends Thread {
 			String fileName = file.toString();
 			System.out.println(fileName);
 
-			Upload_panel.progressBar_total.setMaximum(filesList.size());
+			home.progressBar_total.setMaximum(filesList.size());
 
 			File MyFile = new File(fileName);
 			final Integer innerfileNum = new Integer(fileNum);
@@ -53,11 +53,11 @@ public class FTPUpload extends Thread {
 				public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
 
 					percent = (int) (totalBytesTransferred * 100 / MyFile.length());
-					Upload_panel.progressBar_file.setValue(percent);
-					Upload_panel.progressBar_total.setValue(innerfileNum);
-					Upload_panel.lbl_progres_fichier_p.setText(percent + "%");
-					Upload_panel.lbl_progres_fichier.setText("Fichier : " + file.getName());
-					Upload_panel.lbl_progres_total
+					home.progressBar_file.setValue(percent);
+					home.progressBar_total.setValue(innerfileNum);
+					home.lbl_progres_fichier_p.setText(percent + "%");
+					home.lbl_progres_fichier.setText("Fichier : " + file.getName());
+					home.lbl_progres_total
 							.setText("Progression totale : " + innerfileNum + "/" + filesList.size());
 
 				}

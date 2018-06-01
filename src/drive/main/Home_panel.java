@@ -17,9 +17,7 @@ public class Home_panel extends JPanel {
 	 */
 	public Home_panel() {
 		setLayout(null);
-		
-		setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), null));
-		setBounds(10, 150, 580, 289);
+		setBounds(10, 150, 580, 480);
 		setBackground(new Color(32, 33, 35));
 		setLayout(null);
 		

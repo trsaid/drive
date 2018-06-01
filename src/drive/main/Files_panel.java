@@ -34,6 +34,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,38 +56,34 @@ public class Files_panel extends JPanel {
 
 	int x = 0;
 	int y = 0;
+	
+	JPanel Panel_root;
 
 	public Files_panel() {
+		setBorder(null);
 
 		setLayout(null);
-
-		setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), null));
-		setBounds(10, 150, 580, 289);
+		setBounds(10, 150, 580, 480);
 		setBackground(new Color(32, 33, 35));
 		setLayout(null);
-		setPreferredSize(new Dimension(580, 289));
+		setPreferredSize(new Dimension(580, 480));
 
 		// Scroll panel
 
-		JPanel Panel_root = new JPanel();
+		Panel_root = new JPanel();
+		Panel_root.setBorder(null);
+
 		Panel_root.setBackground(new Color(32, 33, 35));
 
 		JScrollPane scroll = new JScrollPane(Panel_root, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBorder(null);
-		scroll.setBounds(2, 2, 578, 285);
+		scroll.setBounds(2, 2, 578, 480);
 		this.add(scroll);
 
 		// Taille du panel à scroll
 		Panel_root.setPreferredSize(new Dimension(this.getWidth(), 90 * 4));
 		Panel_root.setLayout(null);
-
-		JLabel lblTitle = new JLabel("Mes dossiers");
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblTitle.setForeground(new Color(255, 255, 255));
-		lblTitle.setBounds(224, 11, 132, 25);
-		Panel_root.add(lblTitle);
 
 		List<Dossier> listDossier;
 		listDossier = dossierDAO.getInstance().listDossier(user_id);
@@ -97,6 +95,13 @@ public class Files_panel extends JPanel {
 	public void ShowDossiers(JPanel sourcePanel, List<Dossier> listDossier) {
 		sourcePanel.removeAll();
 		sourcePanel.updateUI();
+		
+		JLabel lblTitle = new JLabel("Mes dossiers");
+		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblTitle.setForeground(new Color(255, 255, 255));
+		lblTitle.setBounds(224, 11, 132, 25);
+		sourcePanel.add(lblTitle);
 
 		JLabel label = new JLabel("");
 		label.setToolTipText("Cr\u00E9er un nouveau dossier");
@@ -135,7 +140,7 @@ public class Files_panel extends JPanel {
 		for (Dossier unDossier : listDossier) {
 			x = espaceX + (btnFileL + espaceX) * (Di % 3); // Position X du bouton de chaque dossier à raison de 3 par
 															// ligne maximum
-			y = 25 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
+			y = 35 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
 
 			files[Di] = new JPanel();
 			files[Di].setBounds(x, y, 167, 48);
@@ -179,12 +184,11 @@ public class Files_panel extends JPanel {
 
 		// Di -> Index de la boucle unDossier.
 		int Di = 0;
-		x = espaceX + (btnFileL + espaceX) * (Di % 3); // Position X du bouton
-		y = 25 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
+		
 		sourcePanel.removeAll();
 		sourcePanel.updateUI();
 		
-		modifyLabel(dossier);
+		modifyLabel(dossier, sourcePanel);
 
 		JLabel lblTitle = new JLabel(dossier.getNom());
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
@@ -214,7 +218,9 @@ public class Files_panel extends JPanel {
 			}
 		});
 		for (Fichier unFichier : listFichiers) {
-
+			x = espaceX + (btnFileL + espaceX) * (Di % 3); // Position X du bouton
+			y = 35 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
+			
 			Fichiers_pan[Di] = new JPanel();
 			Fichiers_pan[Di].setBounds(x, y, 167, 48);
 			Fichiers_pan[Di].setBorder(BorderFactory.createRaisedBevelBorder());
@@ -235,7 +241,7 @@ public class Files_panel extends JPanel {
 		}
 	}
 	
-	public void modifyLabel(Dossier dossier) {
+	public void modifyLabel(Dossier dossier, JPanel sourcePanel) {
 		TransferHandler th = new TransferHandler() {
 
 			@Override
@@ -252,7 +258,6 @@ public class Files_panel extends JPanel {
 //					upload_file_size = files.size();
 //					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
 					
-					
 					FTPUpload U = new FTPUpload(files, dossier);
 					U.start();
 				} catch (UnsupportedFlavorException e) {
@@ -265,4 +270,5 @@ public class Files_panel extends JPanel {
 		};
 		setTransferHandler(th);
 	}
+
 }

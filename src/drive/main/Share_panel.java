@@ -17,8 +17,6 @@ public class Share_panel extends JPanel {
 	 */
 	public Share_panel() {
 		setLayout(null);
-		
-		setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), null));
 		setBounds(10, 150, 580, 289);
 		setBackground(new Color(32, 33, 35));
 		setLayout(null);

@@ -12,27 +12,32 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
 import drive.dao.loginDAO;
 import drive.pojo.Membre;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.Cursor;
 import java.awt.SystemColor;
+import javax.swing.JProgressBar;
 
 public class home extends JFrame {
 
 	private JPanel contentPane;
 
 	private int xMouse, yMouse;
-	public static JLabel lbl_progres_fichier_p;
 
 	// Menu panel
 
-	private JPanel[] Menu_Panel = new JPanel[6];
-	private boolean[] Menu = new boolean[6];
+	private JPanel[] Menu_Panel = new JPanel[5];
+	private boolean[] Menu = new boolean[5];
 	private JPanel Menu_active;
+	
+	// progressbar
+	public static JProgressBar progressBar_total;
+	public static JLabel lbl_progres_total;
+	public static JLabel lbl_progres_fichier;
+	public static JLabel lbl_progres_fichier_p;
+	public static JProgressBar progressBar_file;
 
 	/**
 	 * Launch the application.
@@ -53,7 +58,6 @@ public class home extends JFrame {
 		setLocationRelativeTo(null); // Permet de centrer le programme
 
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
@@ -126,12 +130,6 @@ public class home extends JFrame {
 		MotionPanel.setFocusable(false);
 		MotionPanel.setBounds(0, 0, 800, 34);
 		panel.add(MotionPanel);
-
-		JLabel lblCompte = new JLabel("Compte : ");
-		lblCompte.setFont(new Font("Century Gothic", Font.BOLD, 22));
-		lblCompte.setForeground(Color.WHITE);
-		lblCompte.setBounds(358, 45, 332, 52);
-		panel.add(lblCompte);
 		MotionPanel.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -150,13 +148,11 @@ public class home extends JFrame {
 			}
 		});
 
-		lblCompte.setText("Compte : " + user_name);
-
 		/**
 		 * Panel dynamique qui permet l'affichage des autres panels
 		 */
 		JPanel panel_dyna = new JPanel();
-		panel_dyna.setBounds(212, 149, 580, 490);
+		panel_dyna.setBounds(210, 39, 580, 490);
 		panel.add(panel_dyna);
 		panel_dyna.setBackground(new Color(32, 33, 35));
 		panel_dyna.setLayout(null);
@@ -164,7 +160,7 @@ public class home extends JFrame {
 		/**
 		 * Intégration des panel
 		 */
-		JPanel[] panel_list = { new Home_panel(), new Upload_panel(), new Files_panel(), new Share_panel(),
+		JPanel[] panel_list = { new Home_panel(), new Files_panel(), new Share_panel(),
 				new Archives_panel(), new Account_panel() };
 
 		for (JPanel _panel : panel_list) {
@@ -188,6 +184,34 @@ public class home extends JFrame {
 		label_3.setIcon(new ImageIcon(home.class.getResource("/images/cloud.png")));
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
+		
+		lbl_progres_fichier = new JLabel("Fichier :");
+		lbl_progres_fichier.setForeground(Color.WHITE);
+		lbl_progres_fichier.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lbl_progres_fichier.setBounds(220, 540, 503, 14);
+		panel.add(lbl_progres_fichier);
+		
+		lbl_progres_fichier_p = new JLabel("0%");
+		lbl_progres_fichier_p.setForeground(Color.WHITE);
+		lbl_progres_fichier_p.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lbl_progres_fichier_p.setBounds(750, 541, 40, 14);
+		panel.add(lbl_progres_fichier_p);
+		
+		progressBar_file = new JProgressBar();
+		progressBar_file.setForeground(new Color(0, 128, 128));
+		progressBar_file.setBounds(220, 565, 560, 20);
+		panel.add(progressBar_file);
+		
+		progressBar_total = new JProgressBar();
+		progressBar_total.setForeground(new Color(0, 128, 128));
+		progressBar_total.setBounds(220, 615, 560, 20);
+		panel.add(progressBar_total);
+		
+		lbl_progres_total = new JLabel("Progression totale :");
+		lbl_progres_total.setForeground(Color.WHITE);
+		lbl_progres_total.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lbl_progres_total.setBounds(220, 590, 560, 15);
+		panel.add(lbl_progres_total);
 
 		/**
 		 * Initialisation
@@ -202,10 +226,10 @@ public class home extends JFrame {
 		 */
 
 		// Nom de chaque menu
-		String[] Menu_name = { "Accueil", "Envoyer un fichier", "Mes fichiers", "Partag\u00E9 avec moi", "Archives",
+		String[] Menu_name = { "Accueil", "Mes fichiers", "Partag\u00E9 avec moi", "Archives",
 				"Mon compte" };
 		// Nom des images pour chaque menu sans extention (png seulement).
-		String[] Menu_icon = { "home", "upload2", "files", "share", "archive", "account" };
+		String[] Menu_icon = { "home", "files", "share", "archive", "account" };
 
 		int Menu_i = 0;
 		for (String name : Menu_name) {
