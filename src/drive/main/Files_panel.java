@@ -46,18 +46,20 @@ import javax.swing.TransferHandler;
 
 public class Files_panel extends JPanel {
 
-	int user_id = loginDAO.membre.getId();
-	// Taille bouton dossier
-	int btnFileL = 167;
-	int btnFileH = 48;
-	// Espacement entre les boutons
-	int espaceX = 15;
-	int espaceY = 20;
+	private final static Files_panel INSTANCE = new Files_panel();
 
-	int x = 0;
-	int y = 0;
-	
-	JPanel Panel_root;
+	static int user_id = Main.getUser_logged().getId();
+	// Taille bouton dossier
+	static int btnFileL = 167;
+	static int btnFileH = 48;
+	// Espacement entre les boutons
+	static int espaceX = 15;
+	static int espaceY = 20;
+
+	static int x = 0;
+	static int y = 0;
+
+	static JPanel Panel_root;
 
 	public Files_panel() {
 		setBorder(null);
@@ -88,26 +90,27 @@ public class Files_panel extends JPanel {
 		List<Dossier> listDossier;
 		listDossier = dossierDAO.getInstance().listDossier(user_id);
 
-		ShowDossiers(Panel_root, listDossier);
+		ShowDossiers(listDossier);
 
 	}
 
-	public void ShowDossiers(JPanel sourcePanel, List<Dossier> listDossier) {
-		sourcePanel.removeAll();
-		sourcePanel.updateUI();
-		
+	public void ShowDossiers(List<Dossier> listDossier) {
+		Panel_root.removeAll();
+		Panel_root.updateUI();
+		EmptyCloud();
+
 		JLabel lblTitle = new JLabel("Mes dossiers");
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblTitle.setForeground(new Color(255, 255, 255));
 		lblTitle.setBounds(224, 11, 132, 25);
-		sourcePanel.add(lblTitle);
+		Panel_root.add(lblTitle);
 
 		JLabel label = new JLabel("");
 		label.setToolTipText("Cr\u00E9er un nouveau dossier");
 		Fonction.IconHover(label, "Plus.png", "Plus_Hover.png");
 		label.setBounds(523, 11, 25, 25);
-		sourcePanel.add(label);
+		Panel_root.add(label);
 
 		label.addMouseListener(new MouseAdapter() {
 			@Override
@@ -117,15 +120,17 @@ public class Files_panel extends JPanel {
 				FTPUpload.addDossier(nom_dossier, ftpClient);
 
 				if (nom_dossier == null || nom_dossier.isEmpty()) {
-					 JOptionPane.showMessageDialog(Main.getMainFrame(), "Veuillez enter le nom du dossier.", "Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
-				}else if (dossierDAO.getInstance().folderExist(nom_dossier)) {
-					JOptionPane.showMessageDialog(Main.getMainFrame(), "Dossier déjà éxistant.", "Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
-				}else {
+					JOptionPane.showMessageDialog(Main.getMainFrame(), "Veuillez enter le nom du dossier.",
+							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
+				} else if (dossierDAO.getInstance().folderExist(nom_dossier)) {
+					JOptionPane.showMessageDialog(Main.getMainFrame(), "Dossier déjà éxistant.",
+							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
+				} else {
 					dossierDAO.getInstance().addFolder(nom_dossier);
-					sourcePanel.removeAll();
+					Panel_root.removeAll();
 					List<Dossier> newListDossier = dossierDAO.getInstance().listDossier(user_id);
-					ShowDossiers(sourcePanel, newListDossier);
-					sourcePanel.updateUI();
+					ShowDossiers(newListDossier);
+					Panel_root.updateUI();
 				}
 			}
 		});
@@ -148,22 +153,22 @@ public class Files_panel extends JPanel {
 			files[Di].setLayout(null);
 			files[Di].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			files[Di].setBackground(new Color(40, 40, 40));
-			sourcePanel.add(files[Di]);
-			
+			Panel_root.add(files[Di]);
+
 			files[Di].addMouseListener(new PopClickListener(unDossier));
 
 			files[Di].addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					ShowFichiers(sourcePanel, unDossier);
+					ShowFichiers(unDossier);
 				}
 			});
 
 			JLabel folder_icon = new JLabel("");
 			folder_icon.setBounds(12, 0, 24, 48);
 			files[Di].add(folder_icon);
-			
-			//Changer d'icone quand la souris est sur le panel
+
+			// Changer d'icone quand la souris est sur le panel
 			Fonction.IconHover(folder_icon, "dossier.png", "dossier_hover.png", files[Di]);
 
 			JLabel file_name = new JLabel();
@@ -179,24 +184,23 @@ public class Files_panel extends JPanel {
 		}
 	}
 
-	public void ShowFichiers(JPanel sourcePanel, Dossier dossier) {
-
+	public void ShowFichiers(Dossier dossier) {
 
 		// Di -> Index de la boucle unDossier.
 		int Di = 0;
-		
-		sourcePanel.removeAll();
-		sourcePanel.updateUI();
-		
-		modifyLabel(dossier, sourcePanel);
+
+		Panel_root.removeAll();
+		Panel_root.updateUI();
+
+		modifyLabel(dossier, Panel_root);
 
 		JLabel lblTitle = new JLabel(dossier.getNom());
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblTitle.setForeground(new Color(255, 255, 255));
 		lblTitle.setBounds(224, 11, 132, 25);
-		sourcePanel.add(lblTitle);
-		
+		Panel_root.add(lblTitle);
+
 		ArrayList<Fichier> listFichiers;
 		dossier.setFileList(dossierDAO.getInstance().listFichier(dossier.getId()));
 		listFichiers = dossier.getFileList();
@@ -207,27 +211,27 @@ public class Files_panel extends JPanel {
 		JLabel label = new JLabel("");
 		Fonction.IconHover(label, "icons8_Left_25px.png", "icons8_Left_25px_hover.png");
 		label.setBounds(10, 11, 25, 25);
-		sourcePanel.add(label);
+		Panel_root.add(label);
 
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				List<Dossier> listDossier;
 				listDossier = dossierDAO.getInstance().listDossier(user_id);
-				ShowDossiers(sourcePanel, listDossier);
+				ShowDossiers(listDossier);
 			}
 		});
 		for (Fichier unFichier : listFichiers) {
 			x = espaceX + (btnFileL + espaceX) * (Di % 3); // Position X du bouton
 			y = 35 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
-			
+
 			Fichiers_pan[Di] = new JPanel();
 			Fichiers_pan[Di].setBounds(x, y, 167, 48);
 			Fichiers_pan[Di].setBorder(BorderFactory.createRaisedBevelBorder());
 			Fichiers_pan[Di].setLayout(null);
 			Fichiers_pan[Di].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			Fichiers_pan[Di].setBackground(new Color(40, 40, 40));
-			sourcePanel.add(Fichiers_pan[Di]);
+			Panel_root.add(Fichiers_pan[Di]);
 
 			JLabel file_name = new JLabel();
 			file_name.setBounds(40, 0, 100, 48);
@@ -240,7 +244,7 @@ public class Files_panel extends JPanel {
 			Di++;
 		}
 	}
-	
+
 	public void modifyLabel(Dossier dossier, JPanel sourcePanel) {
 		TransferHandler th = new TransferHandler() {
 
@@ -255,9 +259,10 @@ public class Files_panel extends JPanel {
 				List<File> files;
 				try {
 					files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-//					upload_file_size = files.size();
-//					lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" + (upload_file_size > 1 ? "s" : ""));
-					
+					// upload_file_size = files.size();
+					// lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" +
+					// (upload_file_size > 1 ? "s." : "."));
+
 					FTPUpload U = new FTPUpload(files, dossier);
 					U.start();
 				} catch (UnsupportedFlavorException e) {
@@ -271,4 +276,24 @@ public class Files_panel extends JPanel {
 		setTransferHandler(th);
 	}
 
+	public void EmptyCloud() {
+		ArrayList<Dossier> listDossier = dossierDAO.getInstance().listDossier(user_id);
+		if (listDossier.isEmpty()) {
+			JLabel txt = new JLabel("Vous n'avez toujours pas créé de dossier");
+			txt.setHorizontalAlignment(SwingConstants.CENTER);
+			txt.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			txt.setForeground(new Color(255, 255, 255));
+			txt.setBounds(0, 11, 578, 480);
+			Panel_root.add(txt);
+		}
+		
+	}
+
+	public void EmptyFolders() {
+
+	}
+
+	public static Files_panel getInstance() {
+		return INSTANCE;
+	}
 }

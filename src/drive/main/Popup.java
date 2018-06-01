@@ -2,6 +2,7 @@ package drive.main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -17,14 +18,20 @@ public class Popup extends JPopupMenu {
 	JMenuItem Menu3;
 	JMenuItem Menu4;
 	JLabel titre;
+	
+	int id_user = Main.getUser_logged().getId();
 
 	public Popup(Dossier dossier) {
 		
 		ActionListener menuListener = new ActionListener() {
 		      public void actionPerformed(ActionEvent evt) {
 		    	  String Pressed = evt.getActionCommand();
-		    	  if (Pressed.equals("Supprimer")){
+		    	  if (Pressed.equals("Archiver")){
 		    		  dossierDAO.getInstance().archiverDos(dossier);
+		    		  ArrayList<Dossier> listDossier = dossierDAO.getInstance().listDossier(id_user);
+		    		  Files_panel.getInstance().ShowDossiers(listDossier);
+		    		  ArrayList<Dossier> listArchive = dossierDAO.getInstance().listArchive(id_user);
+		    		  Archives_panel.getInstance().ShowDossiers(listArchive);
 		    	  }
 		        
 		      }
@@ -50,7 +57,7 @@ public class Popup extends JPopupMenu {
 		add(Menu3);
 		Menu3.addActionListener(menuListener);
 		
-		Menu4 = new JMenuItem("Supprimer");
+		Menu4 = new JMenuItem("Archiver");
 		Menu4.setIcon(new ImageIcon(Popup.class.getResource("/images/Trash_25px.png")));
 		add(Menu4);
 		Menu4.addActionListener(menuListener);

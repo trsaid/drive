@@ -7,12 +7,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import drive.dao.dossierDAO;
 import drive.dao.loginDAO;
+import drive.pojo.Dossier;
 import drive.pojo.Membre;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -47,8 +51,7 @@ public class home extends JFrame {
 	 * Create the frame.
 	 */
 	public home(Membre membre) {
-		List<Membre> user = loginDAO.getInstance().userInfo(membre.getId());
-		String user_name = user.get(0).getUsername();
+		String user_name = membre.getUsername();
 
 		setTitle("Cloud - " + user_name);
 		setUndecorated(true);
@@ -247,6 +250,9 @@ public class home extends JFrame {
 					Menu_active = panel_list[innerMenu_i];
 					panel_list[innerMenu_i].setVisible(true);
 					panel_list[innerMenu_i].revalidate();
+					
+//					ArrayList<Dossier> listArchive = dossierDAO.getInstance().listArchive(membre.getId());
+//		    		  Archives_panel.getInstance().ShowDossiers(listArchive);
 
 				}
 

@@ -73,6 +73,66 @@ public class dossierDAO extends genericDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param id_user
+	 * @return Une liste contenant les ID et noms des dossiers Archivé par un utilisateur
+	 *
+	 */
+	public ArrayList<Dossier> listArchive(int id_user) {
+
+		ArrayList<Dossier> listDossiers = new ArrayList<Dossier>();
+		Connection conn = connexionBDD();
+		try {
+			PreparedStatement prep1 = conn
+					.prepareStatement("SELECT A.id, nom_dos, date_archive FROM archives A INNER JOIN dossier D ON A.id_dossier = D.id WHERE id_utilisateurs = ?");
+			prep1.setInt(1, id_user);
+			ResultSet rs = prep1.executeQuery();
+			while (rs.next()) {
+				Dossier dossier = new Dossier();
+				dossier.setId(rs.getInt(1));
+				dossier.setNom(rs.getString(2));
+
+				listDossiers.add(dossier);
+			}
+			return listDossiers;
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param id_dossier
+	 * @return Renvoie la liste de fichiers contenu dans d'un dossier
+	 *
+	 */
+	public ArrayList<Fichier> fichierArchive(int id_dossier) {
+		ArrayList<Fichier> listFichiers = new ArrayList<Fichier>();
+		Connection conn = connexionBDD();
+		try {
+
+			PreparedStatement prep1 = conn.prepareStatement("SELECT id_fichier, nom_fichier, date_archive FROM est_archive WHERE id_archive = ?");
+			prep1.setInt(1, id_dossier);
+			ResultSet rs = prep1.executeQuery();
+			while (rs.next()) {
+				Fichier fichier = new Fichier();
+				fichier.setId(rs.getInt(1));
+				fichier.setNom(rs.getString(2));
+				fichier.setDate(rs.getDate(3));
+
+				listFichiers.add(fichier);
+			}
+			return listFichiers;
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			return null;
+		}
+	}
 
 	/**
 	 * 
