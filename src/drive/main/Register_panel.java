@@ -6,18 +6,15 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-
-import drive.dao.loginDAO;
 import drive.dao.membreDAO;
 
 import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.SystemColor;
 import javax.swing.ImageIcon;
 import java.awt.Cursor;
@@ -31,7 +28,7 @@ public class Register_panel extends JPanel {
 	private JTextField TF_Prenom;
 	private JTextField TF_email;
 	private JPasswordField PF_password_conf;
-	
+
 	private membreDAO membredao;
 
 	/**
@@ -193,17 +190,6 @@ public class Register_panel extends JPanel {
 		panel.add(btn_Register);
 
 		/**
-		 * Message erreur.
-		 */
-
-		JLabel lbl_RegisterError = new JLabel("");
-		lbl_RegisterError.setBounds(84, 470, 414, 30);
-		panel.add(lbl_RegisterError);
-		lbl_RegisterError.setHorizontalAlignment(SwingConstants.CENTER);
-		lbl_RegisterError.setForeground(Color.RED);
-		lbl_RegisterError.setFont(new Font("Courier New", Font.PLAIN, 17));
-
-		/**
 		 * Retour à la page de connexion.
 		 */
 		JLabel back_login = new JLabel("");
@@ -232,32 +218,37 @@ public class Register_panel extends JPanel {
 				String email = TF_email.getText();
 				String pass = PF_password.getText();
 				String Cpass = PF_password_conf.getText();
-				
+
 				boolean userExist = false;
+				boolean EmailExist = false;
 
 				if (uname.isEmpty()) {
-					lbl_RegisterError.setText("Veuillez entrer un nom de compte.");
+					JOptionPane.showMessageDialog(null, "Veuillez entrer un nom de compte.");
 				} else if (lName.isEmpty()) {
-					lbl_RegisterError.setText("Veuillez entrer votre nom.");
+					JOptionPane.showMessageDialog(null, "Veuillez entrer votre nom.");
 				} else if (fName.isEmpty()) {
-					lbl_RegisterError.setText("Veuillez entrer votre prénom.");
+					JOptionPane.showMessageDialog(null, "Veuillez entrer votre prénom.");
 				} else if (email.isEmpty()) {
-					lbl_RegisterError.setText("Veuillez entrer une adresse email.");
+					JOptionPane.showMessageDialog(null, "Veuillez entrer une adresse email.");
 				} else if (pass.isEmpty()) {
-					lbl_RegisterError.setText("Veuillez entrer un mot de passe.");
+					JOptionPane.showMessageDialog(null, "Veuillez entrer un mot de passe.");
 				} else if (Cpass.isEmpty()) {
-					lbl_RegisterError.setText("Veuillez confirmer mot de passe.");
+					JOptionPane.showMessageDialog(null, "Veuillez confirmer mot de passe.");
 				} else {
 					try {
 						userExist = membredao.getInstance().userExist(uname);
+						EmailExist = membredao.getInstance().EmailExist(email);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					if (userExist) {
-						lbl_RegisterError.setText("Ce nom d'utilisateur éxiste déjà!");
+						JOptionPane.showMessageDialog(null, "Ce nom d'utilisateur éxiste déjà !");
+					} else if (EmailExist) {
+						JOptionPane.showMessageDialog(null, "Cette adresse Email éxiste déjà !");
 					} else {
 						try {
-							membredao.getInstance().register(uname, lName, fName, email, pass);
+							membredao.getInstance().inscription(uname, lName, fName, email, pass);
+							JOptionPane.showMessageDialog(null, "Votre compte a été créé avec succès !");
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

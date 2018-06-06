@@ -12,9 +12,9 @@ public class genericDAO {
 			Class.forName("com.mysql.jdbc.Driver");
 //			System.out.println("DRIVER OK");
 
-			String url = "jdbc:mysql://localhost:3306/cloud";
-			String username = "site";
-			String password = "said";
+			String url = "jdbc:mysql://192.168.30.1:3306/cloud";
+			String username = "user";
+			String password = "root";
 
 			Connection con = DriverManager.getConnection(url, username, password);
 //			System.out.println("connexion effective");

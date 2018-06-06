@@ -21,9 +21,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 public class Archives_panel extends JPanel {
-	
+
 	private final static Archives_panel INSTANCE = new Archives_panel();
-	
+
 	int user_id = Main.getUser_logged().getId();
 	// Taille bouton dossier
 	int btnFileL = 167;
@@ -34,7 +34,7 @@ public class Archives_panel extends JPanel {
 
 	int x = 0;
 	int y = 0;
-	
+
 	JPanel Panel_root;
 
 	/**
@@ -45,35 +45,34 @@ public class Archives_panel extends JPanel {
 		setBounds(10, 150, 580, 480);
 		setBackground(new Color(32, 33, 35));
 		setLayout(null);
-		
-		
+
 		// Scroll panel
 
-				Panel_root = new JPanel();
-				Panel_root.setBorder(null);
+		Panel_root = new JPanel();
+		Panel_root.setBorder(null);
 
-				Panel_root.setBackground(new Color(32, 33, 35));
+		Panel_root.setBackground(new Color(32, 33, 35));
 
-				JScrollPane scroll = new JScrollPane(Panel_root, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-				scroll.setBorder(null);
-				scroll.setBounds(2, 2, 578, 480);
-				this.add(scroll);
+		JScrollPane scroll = new JScrollPane(Panel_root, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBorder(null);
+		scroll.setBounds(2, 2, 578, 480);
+		this.add(scroll);
 
-				// Taille du panel à scroll
-				Panel_root.setPreferredSize(new Dimension(this.getWidth(), 90 * 5));
-				Panel_root.setLayout(null);
+		// Taille du panel à scroll
+		Panel_root.setPreferredSize(new Dimension(this.getWidth(), 90 * 5));
+		Panel_root.setLayout(null);
 
-				ArrayList<Dossier> listDossier;
-				listDossier = dossierDAO.getInstance().listArchive(user_id);
-
-				ShowDossiers(listDossier);
+		refreshDir();
 
 	}
+
 	public void ShowDossiers(ArrayList<Dossier> listDossier) {
 		Panel_root.removeAll();
 		Panel_root.updateUI();
-		
+
+		EmptyArchive();
+
 		JLabel lblTitle = new JLabel("Archives");
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -100,7 +99,7 @@ public class Archives_panel extends JPanel {
 			files[Di].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			files[Di].setBackground(new Color(40, 40, 40));
 			Panel_root.add(files[Di]);
-			
+
 			files[Di].addMouseListener(new PopClickListener(unDossier));
 
 			files[Di].addMouseListener(new MouseAdapter() {
@@ -113,8 +112,8 @@ public class Archives_panel extends JPanel {
 			JLabel folder_icon = new JLabel("");
 			folder_icon.setBounds(12, 0, 24, 48);
 			files[Di].add(folder_icon);
-			
-			//Changer d'icone quand la souris est sur le panel
+
+			// Changer d'icone quand la souris est sur le panel
 			Fonction.IconHover(folder_icon, "dossier.png", "dossier_hover.png", files[Di]);
 
 			JLabel file_name = new JLabel();
@@ -131,10 +130,9 @@ public class Archives_panel extends JPanel {
 
 	public void ShowFichiers(Dossier dossier) {
 
-
 		// Di -> Index de la boucle unDossier.
 		int Di = 0;
-		
+
 		Panel_root.removeAll();
 		Panel_root.updateUI();
 
@@ -144,7 +142,7 @@ public class Archives_panel extends JPanel {
 		lblTitle.setForeground(new Color(255, 255, 255));
 		lblTitle.setBounds(224, 11, 132, 25);
 		Panel_root.add(lblTitle);
-		
+
 		ArrayList<Fichier> listFichiers;
 		dossier.setFileList(dossierDAO.getInstance().fichierArchive(dossier.getId()));
 		listFichiers = dossier.getFileList();
@@ -160,15 +158,13 @@ public class Archives_panel extends JPanel {
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				ArrayList<Dossier> listDossier;
-				listDossier = dossierDAO.getInstance().listArchive(user_id);
-				ShowDossiers(listDossier);
+				refreshDir();
 			}
 		});
 		for (Fichier unFichier : listFichiers) {
 			x = espaceX + (btnFileL + espaceX) * (Di % 3); // Position X du bouton
 			y = 35 + espaceX + (btnFileH + espaceY) * (Di / 3); // Position Y du bouton
-			
+
 			Fichiers_pan[Di] = new JPanel();
 			Fichiers_pan[Di].setBounds(x, y, 167, 48);
 			Fichiers_pan[Di].setBorder(BorderFactory.createRaisedBevelBorder());
@@ -188,6 +184,27 @@ public class Archives_panel extends JPanel {
 			Di++;
 		}
 	}
+
+	public void EmptyArchive() {
+		ArrayList<Dossier> listDossier = dossierDAO.getInstance().listArchive(user_id);
+		if (listDossier.isEmpty()) {
+			JLabel txt = new JLabel("Vous n'avez aucun dossier archivé.");
+			txt.setHorizontalAlignment(SwingConstants.CENTER);
+			txt.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			txt.setForeground(new Color(255, 255, 255));
+			txt.setBounds(0, 11, 578, 480);
+			Panel_root.add(txt);
+		}
+
+	}
+	
+	public void refreshDir() {
+		ArrayList<Dossier> listArchive;
+		listArchive = dossierDAO.getInstance().listArchive(user_id);
+
+		ShowDossiers(listArchive);
+	}
+
 	public static Archives_panel getInstance() {
 		return INSTANCE;
 	}

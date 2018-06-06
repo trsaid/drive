@@ -60,28 +60,44 @@ public class membreDAO extends genericDAO {
 		
 	}
 	
-	public void register(String username, String lName, String fName, String email, String password) throws Exception{
+	public boolean EmailExist(String Email) {
+		Connection conn = connexionBDD();
+		try {
+			PreparedStatement prep1 = conn.prepareStatement("SELECT Email FROM utilisateurs WHERE Email = ?");
+			prep1.setString(1, Email);
+			ResultSet rs = prep1.executeQuery();
+			if(rs.next()) {
+				return true;
+			}else {
+				return false;
+			}
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return false;
+		
+	}
+	
+	public void inscription(String username, String L_name, String f_Name, String Email, String password) {
+
 		Connection conn = null;
 		PreparedStatement statement = null;
-		String insertQuerry = "INSERT INTO utilisateurs"
-				+ "(username, nom, prenom, password, email) "
-				+ "VALUES(?,?,?,?,?)";
+
+		String Querry = "INSERT INTO utilisateurs (username, nom, prenom, password, email) VALUES (?, ?, ?, ?, ?)";
 
 		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hash = digest.digest(password.getBytes("UTF-8"));
-			password = DatatypeConverter.printHexBinary(hash);
-			
 			conn = connexionBDD();
-			statement = conn.prepareStatement(insertQuerry);
+			statement = conn.prepareStatement(Querry);
 			
 			statement.setString(1, username);
-			statement.setString(2, lName);
-			statement.setString(3, fName);
-			statement.setString(4, password);
-			statement.setString(5, email);
+			statement.setString(2, L_name);
+			statement.setString(3, f_Name);
+			statement.setString(4, Fonction.PassEncrypt(password));
+			statement.setString(5, Email);
+
 			statement.executeUpdate();
-			
+
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}

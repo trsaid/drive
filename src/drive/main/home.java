@@ -23,6 +23,8 @@ import javax.swing.SwingConstants;
 import java.awt.Cursor;
 import java.awt.SystemColor;
 import javax.swing.JProgressBar;
+import javax.swing.JFileChooser;
+import javax.swing.JSeparator;
 
 public class home extends JFrame {
 
@@ -159,6 +161,8 @@ public class home extends JFrame {
 		panel.add(panel_dyna);
 		panel_dyna.setBackground(new Color(32, 33, 35));
 		panel_dyna.setLayout(null);
+		
+		
 
 		/**
 		 * Intégration des panel

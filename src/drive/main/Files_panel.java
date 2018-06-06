@@ -13,7 +13,7 @@ import drive.dao.dossierDAO;
 import drive.dao.loginDAO;
 import drive.dao.uploadDAO;
 import drive.pojo.Dossier;
-import drive.pojo.FTPUpload;
+import drive.pojo.MyFTP;
 import drive.pojo.Fichier;
 import drive.pojo.Fonction;
 import drive.pojo.PopClickListener;
@@ -87,10 +87,7 @@ public class Files_panel extends JPanel {
 		Panel_root.setPreferredSize(new Dimension(this.getWidth(), 90 * 4));
 		Panel_root.setLayout(null);
 
-		List<Dossier> listDossier;
-		listDossier = dossierDAO.getInstance().listDossier(user_id);
-
-		ShowDossiers(listDossier);
+		refreshDir();
 
 	}
 
@@ -115,9 +112,9 @@ public class Files_panel extends JPanel {
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				FTPClient ftpClient = FTPUpload.loginFTP();
+				FTPClient ftpClient = MyFTP.loginFTP();
 				String nom_dossier = Fonction.Custom_TF_Dialog("Nom du dossier :");
-				FTPUpload.addDossier(nom_dossier, ftpClient);
+				MyFTP.addDossier(nom_dossier, ftpClient);
 
 				if (nom_dossier == null || nom_dossier.isEmpty()) {
 					JOptionPane.showMessageDialog(Main.getMainFrame(), "Veuillez enter le nom du dossier.",
@@ -127,10 +124,8 @@ public class Files_panel extends JPanel {
 							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
 				} else {
 					dossierDAO.getInstance().addFolder(nom_dossier);
-					Panel_root.removeAll();
-					List<Dossier> newListDossier = dossierDAO.getInstance().listDossier(user_id);
-					ShowDossiers(newListDossier);
-					Panel_root.updateUI();
+
+					refreshDir();
 				}
 			}
 		});
@@ -193,6 +188,7 @@ public class Files_panel extends JPanel {
 		Panel_root.updateUI();
 
 		modifyLabel(dossier, Panel_root);
+		EmptyFolders(dossier);
 
 		JLabel lblTitle = new JLabel(dossier.getNom());
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
@@ -216,9 +212,7 @@ public class Files_panel extends JPanel {
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				List<Dossier> listDossier;
-				listDossier = dossierDAO.getInstance().listDossier(user_id);
-				ShowDossiers(listDossier);
+				refreshDir();
 			}
 		});
 		for (Fichier unFichier : listFichiers) {
@@ -247,6 +241,7 @@ public class Files_panel extends JPanel {
 
 	public void modifyLabel(Dossier dossier, JPanel sourcePanel) {
 		TransferHandler th = new TransferHandler() {
+			
 
 			@Override
 			public boolean canImport(JComponent comp, DataFlavor[] tf) {
@@ -263,7 +258,7 @@ public class Files_panel extends JPanel {
 					// lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" +
 					// (upload_file_size > 1 ? "s." : "."));
 
-					FTPUpload U = new FTPUpload(files, dossier);
+					MyFTP U = new MyFTP(files, dossier);
 					U.start();
 				} catch (UnsupportedFlavorException e) {
 					e.printStackTrace();
@@ -289,8 +284,23 @@ public class Files_panel extends JPanel {
 		
 	}
 
-	public void EmptyFolders() {
+	public void EmptyFolders(Dossier dossier) {
+		ArrayList<Fichier> listFichier = dossierDAO.getInstance().listFichier(dossier.getId());
+		if (listFichier.isEmpty()) {
+			JLabel txt = new JLabel("<html> <center> Ce dossier est vide. <br> Glissez vos <b>fichiers</b> ici pour les envoyer sur le cloud. </center></html>");
+			txt.setHorizontalAlignment(SwingConstants.CENTER);
+			txt.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			txt.setForeground(new Color(255, 255, 255));
+			txt.setBounds(0, 11, 578, 480);
+			Panel_root.add(txt);
+		}
+	}
+	
+	public void refreshDir() {
+		ArrayList<Dossier> listDossier;
+		listDossier = dossierDAO.getInstance().listDossier(user_id);
 
+		ShowDossiers(listDossier);
 	}
 
 	public static Files_panel getInstance() {

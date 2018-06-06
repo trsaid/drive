@@ -11,6 +11,9 @@ import javax.swing.JPopupMenu;
 
 import drive.dao.dossierDAO;
 import drive.pojo.Dossier;
+import drive.pojo.Fichier;
+import drive.pojo.Fonction;
+import drive.pojo.MyFTP;
 
 public class Popup extends JPopupMenu {
 	JMenuItem Menu1;
@@ -27,11 +30,27 @@ public class Popup extends JPopupMenu {
 		      public void actionPerformed(ActionEvent evt) {
 		    	  String Pressed = evt.getActionCommand();
 		    	  if (Pressed.equals("Archiver")){
+		    		  
 		    		  dossierDAO.getInstance().archiverDos(dossier);
-		    		  ArrayList<Dossier> listDossier = dossierDAO.getInstance().listDossier(id_user);
-		    		  Files_panel.getInstance().ShowDossiers(listDossier);
+		    		  
+		    		  Files_panel.getInstance().refreshDir();
+		    		  
 		    		  ArrayList<Dossier> listArchive = dossierDAO.getInstance().listArchive(id_user);
 		    		  Archives_panel.getInstance().ShowDossiers(listArchive);
+		    		  
+		    	  }else if (Pressed.equals("Télécharger")) {
+		    		  ArrayList<Fichier> listFichier = dossierDAO.getInstance().listFichier(dossier.getId());
+		    		  Home_panel.addLog("Téléchargement du dossier " + dossier.getNom() + "...");
+		    		  for (Fichier fichier : listFichier) {
+						
+		    			  MyFTP.download(dossier, fichier);
+					}
+		    	  }else if (Pressed.equals("Renommer")) {
+		    		  String name = Fonction.renameDialog(dossier.getNom());
+		    		  MyFTP.rename(dossier, name);
+		    		  Files_panel.getInstance().refreshDir();
+		    	  }else if (Pressed.equals("Partager")) {
+		    		  Fonction.shareDialog();
 		    	  }
 		        
 		      }

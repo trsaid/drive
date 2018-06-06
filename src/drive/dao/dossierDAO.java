@@ -10,6 +10,7 @@ import java.util.Calendar;
 import drive.main.Main;
 import drive.pojo.Dossier;
 import drive.pojo.Fichier;
+import drive.pojo.Fonction;
 
 public class dossierDAO extends genericDAO {
 
@@ -323,6 +324,53 @@ public class dossierDAO extends genericDAO {
 		nom = noExt + "(" + nbr + ")" + "." + type;
 		
 		return nom;
+	}
+	
+	public void renameFolder(Dossier dossier, String name) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+
+		String Querry = "UPDATE dossier SET nom_dossier = ? WHERE nom_dossier = ? AND id_utilisateurs = ?";
+
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+
+			statement.setString(1, name);
+			statement.setString(2, dossier.getNom());
+			statement.setInt(3, Main.getUser_logged().getId());
+
+			statement.executeUpdate();
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+	}
+	
+	public float stockage() {
+		Connection conn = null;
+		PreparedStatement statement = null;
+
+		String Querry = "SELECT SUM(poids_ko) FROM fichier INNER JOIN dossier D ON D.id = id_dossier WHERE id_utilisateurs = ?";
+
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+
+			statement.setInt(1, Main.getUser_logged().getId());
+
+			ResultSet rs = statement.executeQuery();
+
+			if (rs.first()) {
+				int result = (rs.getInt(1) / 1024) / 1024;
+				return result;
+			} else {
+				return 0;
+			}
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			return 0;
+		}
 	}
 
 	public static dossierDAO getInstance() {

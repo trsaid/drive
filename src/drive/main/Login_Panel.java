@@ -28,6 +28,8 @@ import java.util.prefs.Preferences;
 import javax.swing.border.BevelBorder;
 
 public class Login_Panel extends JPanel {
+	
+	Preferences pref = Preferences.userNodeForPackage(Main.class);
 
 	private loginDAO logindao;
 	/**
@@ -177,7 +179,6 @@ public class Login_Panel extends JPanel {
 		 * Zone login.
 		 */
 		
-		
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String uname = username.getText();
@@ -215,7 +216,6 @@ public class Login_Panel extends JPanel {
 		});
 
 	}
-	Preferences pref = Preferences.userNodeForPackage(Main.class);
 	public void saveUser(String username, String password) {
 		pref.put("username", username);
 		pref.put("password", password);
