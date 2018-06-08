@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.io.CopyStreamAdapter;
 
@@ -79,7 +80,7 @@ public class MyFTP extends Thread {
 				 * Vérification de l'éxistance du dossier. Renvoi 550 si le dossier n'existe
 				 * pas, sinon 250.
 				 */
-				String destination = Main.getUser_logged().getId() + "/" + dest.getNom() ;
+				String destination = Main.getUser_logged().getId() + "/" + dest.getNom();
 				int Exist_Error_code = ftpClient.cwd(destination);
 				// System.out.println("code : " + Exist_Error_code);
 
@@ -129,7 +130,7 @@ public class MyFTP extends Thread {
 
 			int replyCode = ftpClient.getReplyCode();
 			if (!FTPReply.isPositiveCompletion(replyCode)) {
-				msg =  "L'opération a échoué. Code de réponse du serveur: " + replyCode;
+				msg = "L'opération a échoué. Code de réponse du serveur: " + replyCode;
 				return null;
 			}
 			boolean success = ftpClient.login(user, pass);
@@ -145,7 +146,7 @@ public class MyFTP extends Thread {
 			System.out.println("Une erreur est survenue lors de la connexion au FTP.");
 			ex.printStackTrace();
 		}
-		if(!msg.isEmpty())
+		if (!msg.isEmpty())
 			JOptionPane.showMessageDialog(null, msg);
 		Home_panel.addLog(msg);
 		return ftpClient;
@@ -174,10 +175,10 @@ public class MyFTP extends Thread {
 		try {
 			// Si le dossier n'éxiste pas.
 			String userid = String.valueOf(Main.getUser_logged().getId());
-			if (!dirExist(userid)) 
+			if (!dirExist(userid))
 				success = ftpClient.makeDirectory(userid);
-				
-			String destination = userid + "/" + name ;
+
+			String destination = userid + "/" + name;
 			if (!dirExist(destination)) {
 				success = ftpClient.makeDirectory(destination);
 
@@ -192,7 +193,7 @@ public class MyFTP extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(!msg.isEmpty())
+		if (!msg.isEmpty())
 			JOptionPane.showMessageDialog(null, msg);
 		Home_panel.addLog(msg);
 	}
@@ -200,12 +201,12 @@ public class MyFTP extends Thread {
 	public static void download(Dossier dossier, Fichier fichier) {
 		FTPClient ftpClient = loginFTP();
 
-		String file = dossier.getNom() + "/" + fichier.getNom();
+		String file = Main.getUser_logged().getId() + "/" + dossier.getNom() + "/" + fichier.getNom();
 		File Path = new File(Main.getDlPath().toString() + "/" + dossier.getNom());
 		File direction = new File(Path + "/" + fichier.getNom());
-
-		Fonction.dirCreat(Path);
 		
+		Fonction.dirCreat(Path);
+
 		String msg = "";
 
 		try {
@@ -234,7 +235,7 @@ public class MyFTP extends Thread {
 	public static void rename(Dossier dossier, String name) {
 		FTPClient ftpClient = loginFTP();
 		String dirName = dossier.getNom();
-		
+
 		String msg = "";
 
 		if (!dirExist(name)) {
@@ -251,11 +252,55 @@ public class MyFTP extends Thread {
 			} else {
 				msg = "Le dossier " + dirName + " n'a pas pu être rennomé.";
 			}
-		}else {
+		} else {
 			msg = "Un dossier portant le nom " + name + " existe déjà!";
 		}
-		if(!msg.isEmpty())
+		if (!msg.isEmpty())
 			JOptionPane.showMessageDialog(null, msg);
+		Home_panel.addLog(msg);
+	}
+
+	public static void delete(Dossier dossier) {
+		FTPClient ftpClient = loginFTP();
+		String dirName = dossier.getNom();
+		String userid = String.valueOf(Main.getUser_logged().getId());
+		String dir = userid + "/" + dirName;
+
+		String msg = "";
+
+		try {
+			FTPFile[] subFiles = ftpClient.listFiles(dir);
+			if (subFiles != null && subFiles.length > 0) {
+				for (FTPFile aFile : subFiles) {
+					String currentFileName = aFile.getName();
+					if (currentFileName.equals(".") || currentFileName.equals("..")) {
+						continue;
+					}
+					String filePath = dir + "/" + currentFileName;
+
+					// Suppression du fichier
+					boolean deleted = ftpClient.deleteFile(filePath);
+					if (deleted) {
+
+						msg = "Suppression du fichier : " + filePath;
+					} else {
+						msg = "Impossible de supprimer le fichier " + filePath;
+					}
+				}
+
+				// Suppression du dossier
+			}
+			boolean removed = ftpClient.removeDirectory(dir);
+			if (removed) {
+				msg = "Suppression du dossier : " + dirName;
+				dossierDAO.getInstance().delete(dossier);
+			} else {
+				msg = "Impossible de supprimer le dossier : " + dirName;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Home_panel.addLog(msg);
 	}
 }

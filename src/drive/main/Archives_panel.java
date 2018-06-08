@@ -79,6 +79,19 @@ public class Archives_panel extends JPanel {
 		lblTitle.setForeground(new Color(255, 255, 255));
 		lblTitle.setBounds(224, 11, 132, 25);
 		Panel_root.add(lblTitle);
+		
+		JLabel refresh = new JLabel("");
+		refresh.setToolTipText("Actualiser");
+		Fonction.IconHover(refresh, "Refresh.png", "Refresh_Hover.png");
+		refresh.setBounds(523, 11, 25, 25);
+		Panel_root.add(refresh);
+		
+		refresh.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				refreshDir();
+			}
+		});
 
 		int nbDossier = listDossier.size();
 

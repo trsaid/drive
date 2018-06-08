@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 import drive.dao.dossierDAO;
 import drive.dao.loginDAO;
+import drive.dao.membreDAO;
 import drive.pojo.Dossier;
 import drive.pojo.Membre;
 import javax.swing.ImageIcon;
@@ -36,8 +37,8 @@ public class home extends JFrame {
 
 	private JPanel[] Menu_Panel = new JPanel[5];
 	private boolean[] Menu = new boolean[5];
-	private JPanel Menu_active;
-	
+	private static JPanel Menu_active;
+
 	// progressbar
 	public static JProgressBar progressBar_total;
 	public static JLabel lbl_progres_total;
@@ -255,8 +256,8 @@ public class home extends JFrame {
 					panel_list[innerMenu_i].setVisible(true);
 					panel_list[innerMenu_i].revalidate();
 					
-//					ArrayList<Dossier> listArchive = dossierDAO.getInstance().listArchive(membre.getId());
-//		    		  Archives_panel.getInstance().ShowDossiers(listArchive);
+					ArrayList<Dossier> listArchive = dossierDAO.getInstance().listArchive(membre.getId());
+		    		  Archives_panel.getInstance().ShowDossiers(listArchive);
 
 				}
 
@@ -303,6 +304,22 @@ public class home extends JFrame {
 			Menu_i++;
 		}
 
+		if(membreDAO.getInstance().isAdmin()) {
+			JLabel lbl_Administration = new JLabel("Administration");
+			lbl_Administration.setHorizontalAlignment(SwingConstants.CENTER);
+			lbl_Administration.setForeground(Color.WHITE);
+			lbl_Administration.setFont(new Font("Tahoma", Font.PLAIN, 13));
+			lbl_Administration.setBounds(10, 612, 185, 27);
+			menu_panel.add(lbl_Administration);
+			
+			lbl_Administration.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					admin frame = new admin();
+					frame.setVisible(true);
+				}
+			});
+		}
 	}
 
 	public void MenuClick(MouseEvent e, int nb) {
@@ -322,5 +339,13 @@ public class home extends JFrame {
 			Menu[i] = false;
 			Menu_Panel[i].setBackground(color);
 		}
+	}
+	
+	public static JPanel getMenu_active() {
+		return Menu_active;
+	}
+
+	public void setMenu_active(JPanel menu_active) {
+		Menu_active = menu_active;
 	}
 }

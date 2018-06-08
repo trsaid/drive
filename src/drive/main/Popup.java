@@ -20,6 +20,7 @@ public class Popup extends JPopupMenu {
 	JMenuItem Menu2;
 	JMenuItem Menu3;
 	JMenuItem Menu4;
+	JMenuItem Menu5;
 	JLabel titre;
 	
 	int id_user = Main.getUser_logged().getId();
@@ -35,8 +36,7 @@ public class Popup extends JPopupMenu {
 		    		  
 		    		  Files_panel.getInstance().refreshDir();
 		    		  
-		    		  ArrayList<Dossier> listArchive = dossierDAO.getInstance().listArchive(id_user);
-		    		  Archives_panel.getInstance().ShowDossiers(listArchive);
+		    		  Archives_panel.getInstance().refreshDir();
 		    		  
 		    	  }else if (Pressed.equals("Télécharger")) {
 		    		  ArrayList<Fichier> listFichier = dossierDAO.getInstance().listFichier(dossier.getId());
@@ -51,6 +51,9 @@ public class Popup extends JPopupMenu {
 		    		  Files_panel.getInstance().refreshDir();
 		    	  }else if (Pressed.equals("Partager")) {
 		    		  Fonction.shareDialog();
+		    	  }else if (Pressed.equals("Supprimer")) {
+//		    		  Fonction.shareDialog();
+		    		  MyFTP.delete(dossier);
 		    	  }
 		        
 		      }
@@ -63,23 +66,39 @@ public class Popup extends JPopupMenu {
 		
 		Menu1 = new JMenuItem("Télécharger");
 		Menu1.setIcon(new ImageIcon(Popup.class.getResource("/images/Download_25px.png")));
-		add(Menu1);
+		
 		Menu1.addActionListener(menuListener);
 		
 		Menu2 = new JMenuItem("Partager");
 		Menu2.setIcon(new ImageIcon(Popup.class.getResource("/images/Share_25px.png")));
-		add(Menu2);
+		
 		Menu2.addActionListener(menuListener);
 		
 		Menu3 = new JMenuItem("Renommer");
 		Menu3.setIcon(new ImageIcon(Popup.class.getResource("/images/Rename_25px.png")));
-		add(Menu3);
 		Menu3.addActionListener(menuListener);
 		
 		Menu4 = new JMenuItem("Archiver");
 		Menu4.setIcon(new ImageIcon(Popup.class.getResource("/images/Trash_25px.png")));
-		add(Menu4);
 		Menu4.addActionListener(menuListener);
+		
+		Menu5 = new JMenuItem("Supprimer");
+		Menu5.setIcon(new ImageIcon(Popup.class.getResource("/images/Trash_25px.png")));
+		Menu5.addActionListener(menuListener);
+		
+		String Menu_active = home.getMenu_active().getClass().getName();
+		
+		if(Menu_active.equals("drive.main.Files_panel")) {
+			add(Menu1);
+			add(Menu2);
+			add(Menu3);
+			add(Menu4);
+		}else if(Menu_active.equals("drive.main.Share_panel")) {
+			add(Menu1);
+		}else if(Menu_active.equals("drive.main.Archives_panel")) {
+			add(Menu1);
+			add(Menu5);
+		}
 
 	}
 }

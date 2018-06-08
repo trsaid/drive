@@ -18,7 +18,7 @@ import drive.pojo.Membre;
 public class membreDAO extends genericDAO {
 	private final static membreDAO INSTANCE = new membreDAO();
 
-	public List<Membre> afficherMembres() {
+	public ArrayList<Membre> afficherMembres() {
 		ArrayList<Membre> listeMembres = new ArrayList<Membre>();
 		Connection conn = connexionBDD();
 		Statement statement;
@@ -217,6 +217,33 @@ public class membreDAO extends genericDAO {
 			
 		} catch(SQLException sqle) {
 			sqle.printStackTrace();
+		}
+	}
+	
+	public boolean isAdmin() {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		String Querry = "SELECT * FROM utilisateurs WHERE username = ? and niveau > 1";
+		
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+			
+			statement.setString(1, Main.getUser_logged().getUsername());
+			
+			ResultSet rs = statement.executeQuery();
+			
+			if(rs.next()) {
+				return true;
+			}else {
+				return false;
+			}
+			
+			
+			
+		} catch(SQLException sqle) {
+			sqle.printStackTrace();
+			return false;
 		}
 	}
 	

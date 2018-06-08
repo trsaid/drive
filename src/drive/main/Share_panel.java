@@ -82,7 +82,7 @@ public class Share_panel extends JPanel {
 
 	}
 
-	public void ShowDossiers(List<Dossier> listDossier) {
+	public void ShowDossiers(ArrayList<Dossier> listDossier) {
 		Panel_root.removeAll();
 		Panel_root.updateUI();
 		EmptyCloud();
@@ -94,30 +94,16 @@ public class Share_panel extends JPanel {
 		lblTitle.setBounds(10, 11, 560, 25);
 		Panel_root.add(lblTitle);
 
-		JLabel label = new JLabel("");
-		label.setToolTipText("Cr\u00E9er un nouveau dossier");
-		Fonction.IconHover(label, "Plus.png", "Plus_Hover.png");
-		label.setBounds(523, 11, 25, 25);
-		Panel_root.add(label);
-
-		label.addMouseListener(new MouseAdapter() {
+		JLabel refresh = new JLabel("");
+		refresh.setToolTipText("Actualiser");
+		Fonction.IconHover(refresh, "Refresh.png", "Refresh_Hover.png");
+		refresh.setBounds(523, 11, 25, 25);
+		Panel_root.add(refresh);
+		
+		refresh.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				FTPClient ftpClient = MyFTP.loginFTP();
-				String nom_dossier = Fonction.Custom_TF_Dialog("Nom du dossier :");
-				MyFTP.addDossier(nom_dossier, ftpClient);
-
-				if (nom_dossier == null || nom_dossier.isEmpty()) {
-					JOptionPane.showMessageDialog(Main.getMainFrame(), "Veuillez enter le nom du dossier.",
-							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
-				} else if (dossierDAO.getInstance().folderExist(nom_dossier)) {
-					JOptionPane.showMessageDialog(Main.getMainFrame(), "Dossier déjà éxistant.",
-							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					dossierDAO.getInstance().addFolder(nom_dossier);
-
-					refreshDir();
-				}
+				refreshDir();
 			}
 		});
 
@@ -178,7 +164,6 @@ public class Share_panel extends JPanel {
 		Panel_root.removeAll();
 		Panel_root.updateUI();
 
-		modifyLabel(dossier, Panel_root);
 		EmptyFolders(dossier);
 
 		JLabel lblTitle = new JLabel(dossier.getNom());
@@ -230,40 +215,8 @@ public class Share_panel extends JPanel {
 		}
 	}
 
-	public void modifyLabel(Dossier dossier, JPanel sourcePanel) {
-		TransferHandler th = new TransferHandler() {
-			
-
-			@Override
-			public boolean canImport(JComponent comp, DataFlavor[] tf) {
-				return true;
-			};
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean importData(JComponent comp, Transferable t) {
-				List<File> files;
-				try {
-					files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					// upload_file_size = files.size();
-					// lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" +
-					// (upload_file_size > 1 ? "s." : "."));
-
-					MyFTP U = new MyFTP(files, dossier);
-					U.start();
-				} catch (UnsupportedFlavorException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-		};
-		setTransferHandler(th);
-	}
-
 	public void EmptyCloud() {
-		ArrayList<Dossier> listDossier = dossierDAO.getInstance().listDossier(user_id);
+		ArrayList<Dossier> listDossier = dossierDAO.getInstance().listShare(user_id);
 		if (listDossier.isEmpty()) {
 			JLabel txt = new JLabel("Il n'y a aucun dossier partagé avec vous");
 			txt.setHorizontalAlignment(SwingConstants.CENTER);
@@ -289,7 +242,7 @@ public class Share_panel extends JPanel {
 	
 	public void refreshDir() {
 		ArrayList<Dossier> listDossier;
-		listDossier = dossierDAO.getInstance().listDossier(user_id);
+		listDossier = dossierDAO.getInstance().listShare(user_id);
 
 		ShowDossiers(listDossier);
 	}

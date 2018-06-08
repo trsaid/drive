@@ -11,6 +11,7 @@ import drive.main.Main;
 import drive.pojo.Dossier;
 import drive.pojo.Fichier;
 import drive.pojo.Fonction;
+import drive.pojo.Membre;
 
 public class dossierDAO extends genericDAO {
 
@@ -27,8 +28,8 @@ public class dossierDAO extends genericDAO {
 		ArrayList<Dossier> listDossiers = new ArrayList<Dossier>();
 		Connection conn = connexionBDD();
 		try {
-			PreparedStatement prep1 = conn
-					.prepareStatement("SELECT id, nom_dossier, date_upload FROM dossier WHERE id_utilisateurs = ?  AND id NOT IN (SELECT id_dossier FROM archives)");
+			PreparedStatement prep1 = conn.prepareStatement(
+					"SELECT id, nom_dossier, date_upload FROM dossier WHERE id_utilisateurs = ?  AND id NOT IN (SELECT id_dossier FROM archives)");
 			prep1.setInt(1, id_user);
 			ResultSet rs = prep1.executeQuery();
 			while (rs.next()) {
@@ -57,7 +58,8 @@ public class dossierDAO extends genericDAO {
 		Connection conn = connexionBDD();
 		try {
 
-			PreparedStatement prep1 = conn.prepareStatement("SELECT id, nom_fichier, date_upload FROM fichier WHERE id_dossier = ? AND id NOT IN (SELECT id_fichier FROM est_archive)");
+			PreparedStatement prep1 = conn.prepareStatement(
+					"SELECT id, nom_fichier, date_upload FROM fichier WHERE id_dossier = ? AND id NOT IN (SELECT id_fichier FROM est_archive)");
 			prep1.setInt(1, id_dossier);
 			ResultSet rs = prep1.executeQuery();
 			while (rs.next()) {
@@ -74,11 +76,12 @@ public class dossierDAO extends genericDAO {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param id_user
-	 * @return Une liste contenant les ID et noms des dossiers Archivé par un utilisateur
+	 * @return Une liste contenant les ID et noms des dossiers Archivé par un
+	 *         utilisateur
 	 *
 	 */
 	public ArrayList<Dossier> listArchive(int id_user) {
@@ -86,8 +89,8 @@ public class dossierDAO extends genericDAO {
 		ArrayList<Dossier> listDossiers = new ArrayList<Dossier>();
 		Connection conn = connexionBDD();
 		try {
-			PreparedStatement prep1 = conn
-					.prepareStatement("SELECT A.id, nom_dos, date_archive FROM archives A INNER JOIN dossier D ON A.id_dossier = D.id WHERE id_utilisateurs = ?");
+			PreparedStatement prep1 = conn.prepareStatement(
+					"SELECT A.id, nom_dos, date_archive FROM archives A INNER JOIN dossier D ON A.id_dossier = D.id WHERE id_utilisateurs = ?");
 			prep1.setInt(1, id_user);
 			ResultSet rs = prep1.executeQuery();
 			while (rs.next()) {
@@ -104,7 +107,7 @@ public class dossierDAO extends genericDAO {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param id_dossier
@@ -116,7 +119,8 @@ public class dossierDAO extends genericDAO {
 		Connection conn = connexionBDD();
 		try {
 
-			PreparedStatement prep1 = conn.prepareStatement("SELECT id_fichier, nom_fichier, date_archive FROM est_archive WHERE id_archive = ?");
+			PreparedStatement prep1 = conn.prepareStatement(
+					"SELECT id_fichier, nom_fichier, date_archive FROM est_archive WHERE id_archive = ?");
 			prep1.setInt(1, id_dossier);
 			ResultSet rs = prep1.executeQuery();
 			while (rs.next()) {
@@ -128,6 +132,36 @@ public class dossierDAO extends genericDAO {
 				listFichiers.add(fichier);
 			}
 			return listFichiers;
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * 
+	 * @param id_user
+	 * @return Une liste contenant les ID et noms des dossiers partagé avec moi
+	 *
+	 */
+	public ArrayList<Dossier> listShare(int id_user) {
+
+		ArrayList<Dossier> listDossiers = new ArrayList<Dossier>();
+		Connection conn = connexionBDD();
+		try {
+			PreparedStatement prep1 = conn.prepareStatement(
+					"SELECT D.id, nom_dossier, date_upload FROM dossier D INNER JOIN droit_acces DA ON id_dossier = D.id WHERE DA.id_utilisateurs = ?");
+			prep1.setInt(1, id_user);
+			ResultSet rs = prep1.executeQuery();
+			while (rs.next()) {
+				Dossier dossier = new Dossier();
+				dossier.setId(rs.getInt(1));
+				dossier.setNom(rs.getString(2));
+
+				listDossiers.add(dossier);
+			}
+			return listDossiers;
 
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -229,9 +263,9 @@ public class dossierDAO extends genericDAO {
 					int archive = rs.getInt(1);
 					if (!archivedFileExist(fichier, archive)) {
 						archiveFile(fichier, archive);
-					}else {
+					} else {
 						int nbr = 0;
-						while(archivedFileExist(fichier, archive)) {
+						while (archivedFileExist(fichier, archive)) {
 							nbr++;
 							fichier.setNom(newName(fichier.getNom(), nbr));
 						}
@@ -239,13 +273,13 @@ public class dossierDAO extends genericDAO {
 					}
 				}
 
-			}else {
+			} else {
 				String Querry2 = "INSERT INTO archives (date_archive, nom_dos, id_dossier) VALUES (?, ?, ?)";
 				PreparedStatement statement2 = conn.prepareStatement(Querry2);
 				statement2.setDate(1, date_archive);
 				statement2.setString(2, name);
 				statement2.setInt(3, id);
-				
+
 				statement2.executeUpdate();
 			}
 		} catch (SQLException sqle) {
@@ -266,7 +300,7 @@ public class dossierDAO extends genericDAO {
 		try {
 			conn = connexionBDD();
 			statement = conn.prepareStatement(Querry);
-			
+
 			statement.setInt(1, archive);
 			statement.setInt(2, id);
 			statement.setString(3, name);
@@ -307,7 +341,7 @@ public class dossierDAO extends genericDAO {
 			return true;
 		}
 	}
-	
+
 	public String newName(String nom, int nbr) {
 		String type = "";
 		String noExt = "";
@@ -316,16 +350,16 @@ public class dossierDAO extends genericDAO {
 		int p = Math.max(nom.lastIndexOf('/'), nom.lastIndexOf('\\'));
 
 		if (i > p) {
-			type = nom.substring(i+1);
+			type = nom.substring(i + 1);
 		}
-		
+
 		noExt = nom.substring(0, i);
-				
+
 		nom = noExt + "(" + nbr + ")" + "." + type;
-		
+
 		return nom;
 	}
-	
+
 	public void renameFolder(Dossier dossier, String name) {
 		Connection conn = null;
 		PreparedStatement statement = null;
@@ -347,6 +381,26 @@ public class dossierDAO extends genericDAO {
 		}
 	}
 	
+	public void delete(Dossier dossier) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+
+		String Querry = "DELETE FROM dossier WHERE nom_dossier = ? AND id_utilisateurs = ?";
+
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+
+			statement.setString(1, dossier.getNom());
+			statement.setInt(2, Main.getUser_logged().getId());
+
+			statement.executeUpdate();
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+	}
+
 	public float stockage() {
 		Connection conn = null;
 		PreparedStatement statement = null;
@@ -358,6 +412,32 @@ public class dossierDAO extends genericDAO {
 			statement = conn.prepareStatement(Querry);
 
 			statement.setInt(1, Main.getUser_logged().getId());
+
+			ResultSet rs = statement.executeQuery();
+
+			if (rs.first()) {
+				int result = (rs.getInt(1) / 1024) / 1024;
+				return result;
+			} else {
+				return 0;
+			}
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			return 0;
+		}
+	}
+	
+	public float stockage(Membre membre) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+
+		String Querry = "SELECT SUM(poids_ko) FROM fichier INNER JOIN dossier D ON D.id = id_dossier WHERE id_utilisateurs = ?";
+
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+
+			statement.setInt(1, membre.getId());
 
 			ResultSet rs = statement.executeQuery();
 
