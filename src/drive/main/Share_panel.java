@@ -3,11 +3,8 @@ package drive.main;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import org.apache.commons.net.ftp.FTPClient;
-
 import drive.dao.dossierDAO;
 import drive.pojo.Dossier;
-import drive.pojo.MyFTP;
 import drive.pojo.Fichier;
 import drive.pojo.Fonction;
 import drive.pojo.PopClickListener;
@@ -17,23 +14,12 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Font;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
 
 public class Share_panel extends JPanel {
 

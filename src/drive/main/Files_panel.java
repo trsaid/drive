@@ -1,17 +1,11 @@
 package drive.main;
 
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-
 import org.apache.commons.net.ftp.FTPClient;
 
 import drive.dao.dossierDAO;
-import drive.dao.loginDAO;
-import drive.dao.uploadDAO;
 import drive.pojo.Dossier;
 import drive.pojo.MyFTP;
 import drive.pojo.Fichier;
@@ -25,7 +19,6 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
@@ -34,8 +27,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,15 +105,19 @@ public class Files_panel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				FTPClient ftpClient = MyFTP.loginFTP();
 				String nom_dossier = Fonction.Custom_TF_Dialog("Nom du dossier :");
-				MyFTP.addDossier(nom_dossier, ftpClient);
 
 				if (nom_dossier == null || nom_dossier.isEmpty()) {
+					
 					JOptionPane.showMessageDialog(Main.getMainFrame(), "Veuillez enter le nom du dossier.",
 							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
+					
 				} else if (dossierDAO.getInstance().folderExist(nom_dossier)) {
+					
 					JOptionPane.showMessageDialog(Main.getMainFrame(), "Dossier déjà éxistant.",
 							"Création du fichier impossible !", JOptionPane.INFORMATION_MESSAGE);
+					
 				} else {
+					MyFTP.addDossier(nom_dossier, ftpClient);
 					dossierDAO.getInstance().addFolder(nom_dossier);
 
 					refreshDir();
@@ -254,9 +249,6 @@ public class Files_panel extends JPanel {
 				List<File> files;
 				try {
 					files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					// upload_file_size = files.size();
-					// lbl_upload_txt.setText("Vous avez envoyé " + upload_file_size + " fichier" +
-					// (upload_file_size > 1 ? "s." : "."));
 
 					MyFTP U = new MyFTP(files, dossier);
 					U.start();

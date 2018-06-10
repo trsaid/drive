@@ -1,16 +1,11 @@
 package drive.dao;
 
-import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.DatatypeConverter;
-
 import drive.main.Main;
 import drive.pojo.Fonction;
 import drive.pojo.Membre;
@@ -134,8 +129,32 @@ public class membreDAO extends genericDAO {
 			
 			return null;
 		}
-		
 	}
+		
+		public int getID(String Email) {
+			Connection conn = null;
+			PreparedStatement statement = null;
+			String Querry = "SELECT id FROM utilisateurs WHERE Email = ?";
+			try {
+				conn = connexionBDD();
+				statement = conn.prepareStatement(Querry);
+				
+				statement.setString(1, Email);
+				
+				ResultSet rs = statement.executeQuery();
+				
+				if(rs.next())
+					return rs.getInt(1);
+				else
+					return 0;
+				
+			} catch (SQLException sqle) {
+				sqle.printStackTrace();
+				
+				return 0;
+			}
+		}
+		
 	/**
 	 * Permet de changer le nom de l'utilisateur
 	 * @param membre (Le membre actuellement connecté)

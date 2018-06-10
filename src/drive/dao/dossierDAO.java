@@ -10,7 +10,6 @@ import java.util.Calendar;
 import drive.main.Main;
 import drive.pojo.Dossier;
 import drive.pojo.Fichier;
-import drive.pojo.Fonction;
 import drive.pojo.Membre;
 
 public class dossierDAO extends genericDAO {
@@ -341,6 +340,29 @@ public class dossierDAO extends genericDAO {
 			return true;
 		}
 	}
+	
+	public void Share(Dossier dossier, int id_user) {
+		int id = dossier.getId();
+
+		Connection conn = null;
+		PreparedStatement statement = null;
+
+		String Querry = "INSERT INTO droit_acces (id_utilisateurs, id_dossier) VALUES (?, ?)";
+
+		try {
+			conn = connexionBDD();
+			statement = conn.prepareStatement(Querry);
+
+			statement.setInt(1, id_user);
+			statement.setInt(2, id);
+
+			statement.executeUpdate();
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+	}
+	
 
 	public String newName(String nom, int nbr) {
 		String type = "";

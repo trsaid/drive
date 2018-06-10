@@ -21,7 +21,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
 
 public class Home_panel extends JPanel {
 	private JTextField Path;
@@ -47,11 +46,6 @@ public class Home_panel extends JPanel {
 		
 		JButton btnParcourir = new JButton("Parcourir");
 		btnParcourir.setBounds(420, 85, 150, 40);
-		btnParcourir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(BrowseFile());
-			}
-		});
 		btnParcourir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -89,7 +83,6 @@ public class Home_panel extends JPanel {
 		progressBar.setMaximum(100);
 		float Mo = dossierDAO.getInstance().stockage();
 		float pourcent = ((Mo / 200) * 100);
-		System.out.println(pourcent);
 		progressBar.setValue(Math.round(pourcent));
 		add(progressBar);
 		

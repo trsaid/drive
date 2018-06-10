@@ -6,9 +6,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-
 import drive.dao.loginDAO;
 import drive.pojo.Membre;
 
@@ -19,7 +16,6 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;

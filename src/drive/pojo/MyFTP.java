@@ -67,6 +67,7 @@ public class MyFTP extends Thread {
 					home.lbl_progres_fichier_p.setText(percent + "%");
 					home.lbl_progres_fichier.setText("Fichier : " + file.getName());
 					home.lbl_progres_total.setText("Progression totale : " + innerfileNum + "/" + filesList.size());
+					System.out.println(percent);
 
 				}
 

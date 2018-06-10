@@ -3,7 +3,6 @@ package drive.main;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import java.awt.Color;
 import java.awt.Font;
@@ -17,9 +16,6 @@ import javax.swing.JButton;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentListener;
-import javax.xml.bind.DatatypeConverter;
-
 import drive.dao.membreDAO;
 import drive.pojo.Fonction;
 import drive.pojo.Membre;
@@ -28,12 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.beans.PropertyChangeEvent;
 
 public class Account_panel extends JPanel {
 

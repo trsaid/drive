@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import drive.dao.dossierDAO;
+import drive.dao.membreDAO;
 import drive.pojo.Dossier;
 import drive.pojo.Fichier;
 import drive.pojo.Fonction;
@@ -30,6 +32,9 @@ public class Popup extends JPopupMenu {
 		ActionListener menuListener = new ActionListener() {
 		      public void actionPerformed(ActionEvent evt) {
 		    	  String Pressed = evt.getActionCommand();
+		    	  
+		    	  String msg = "";
+		    	  
 		    	  if (Pressed.equals("Archiver")){
 		    		  
 		    		  dossierDAO.getInstance().archiverDos(dossier);
@@ -39,20 +44,44 @@ public class Popup extends JPopupMenu {
 		    		  Archives_panel.getInstance().refreshDir();
 		    		  
 		    	  }else if (Pressed.equals("Télécharger")) {
+		    		  
 		    		  ArrayList<Fichier> listFichier = dossierDAO.getInstance().listFichier(dossier.getId());
 		    		  Home_panel.addLog("Téléchargement du dossier " + dossier.getNom() + "...");
+		    		  
 		    		  for (Fichier fichier : listFichier) {
 						
 		    			  MyFTP.download(dossier, fichier);
-					}
+		    		  }
+		    		  
 		    	  }else if (Pressed.equals("Renommer")) {
+		    		  
 		    		  String name = Fonction.renameDialog(dossier.getNom());
 		    		  MyFTP.rename(dossier, name);
 		    		  Files_panel.getInstance().refreshDir();
+		    		  
 		    	  }else if (Pressed.equals("Partager")) {
-		    		  Fonction.shareDialog();
+		    		  
+		    		  String email = Fonction.shareDialog();
+		    		  int shareId = membreDAO.getInstance().getID(email);
+		    		  int logedUser = Main.getUser_logged().getId();
+		    		  
+		    		  if (shareId == logedUser) {
+		    			  msg = "Vous ne pouvez pas partager un dossier avec vous même.";
+		    			  JOptionPane.showMessageDialog(null, msg, "Partage de dossier", JOptionPane.INFORMATION_MESSAGE);
+		    			  Home_panel.addLog(msg);
+		    		  }
+		    		  else if(shareId > 0) {
+		    			  dossierDAO.getInstance().Share(dossier, shareId);
+		    			  msg = "Le dossier " + dossier.getNom() + " a été partager avec " + email;
+		    			  JOptionPane.showMessageDialog(null, msg, "Partage de dossier", JOptionPane.INFORMATION_MESSAGE);
+		    			  Home_panel.addLog(msg);
+		    		  }
+		    		  else {
+		    			  msg = "Aucun utilisateur trouvé avec l'adresse : " + email;
+		    			  JOptionPane.showMessageDialog(null, msg, "Partage de dossier", JOptionPane.INFORMATION_MESSAGE);
+		    			  Home_panel.addLog(msg);
+		    		  }
 		    	  }else if (Pressed.equals("Supprimer")) {
-//		    		  Fonction.shareDialog();
 		    		  MyFTP.delete(dossier);
 		    	  }
 		        

@@ -7,25 +7,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import drive.dao.dossierDAO;
-import drive.dao.loginDAO;
 import drive.dao.membreDAO;
 import drive.pojo.Dossier;
 import drive.pojo.Membre;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.SystemColor;
 import javax.swing.JProgressBar;
-import javax.swing.JFileChooser;
-import javax.swing.JSeparator;
 
 public class home extends JFrame {
 
@@ -192,6 +190,38 @@ public class home extends JFrame {
 		label_3.setIcon(new ImageIcon(home.class.getResource("/images/cloud.png")));
 		label_3.setBounds(0, 0, 205, 146);
 		menu_panel.add(label_3);
+		
+		JLabel lbl_glpi = new JLabel("<html><center>Vous rencontrez un probl\u00E8me ? <br> Cliquez ici !</center></html>");
+		lbl_glpi.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+				    Desktop.getDesktop().browse(new URL("http://192.168.0.10/glpi").toURI());
+				} catch (Exception ex) {}
+			}
+		});
+		lbl_glpi.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_glpi.setForeground(Color.WHITE);
+		lbl_glpi.setBackground(Color.WHITE);
+		lbl_glpi.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lbl_glpi.setBounds(10, 498, 185, 43);
+		menu_panel.add(lbl_glpi);
+		
+		JLabel lbl_github = new JLabel("<html><center>D\u00E9velopp\u00E9 par <b>TRARI Sa\u00EFd</b></center></html>");
+		lbl_github.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lbl_github.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+				    Desktop.getDesktop().browse(new URL("http://github.com/trsaid").toURI());
+				} catch (Exception ex) {}
+			}
+		});
+		lbl_github.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_github.setForeground(Color.WHITE);
+		lbl_github.setBackground(Color.WHITE);
+		lbl_github.setBounds(10, 552, 185, 43);
+		menu_panel.add(lbl_github);
 		
 		lbl_progres_fichier = new JLabel("Fichier :");
 		lbl_progres_fichier.setForeground(Color.WHITE);
